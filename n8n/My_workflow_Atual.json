@@ -27,7 +27,7 @@
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
       "position": [
-        1540,
+        2040,
         0
       ],
       "id": "ff9b5364-13ae-46b1-aec8-f505fe8ee57e",
@@ -97,7 +97,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        840,
+        1340,
         0
       ],
       "id": "9a5df26d-1e3c-44a6-b32f-8068c66b5059",
@@ -112,7 +112,7 @@
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
       "position": [
-        1180,
+        1680,
         0
       ],
       "id": "73687994-9507-4691-b164-897b794c29e8",
@@ -132,7 +132,7 @@
           "actionFields": [
             {
               "action": "insert",
-              "text": "=# Análise de Empresa - {{ $('Edit Fields').item.json.empresa }}\\n\\n**Data da Análise:** {{ $now.format('DD HH:mm:ss') }}\\n**Gerado por:** Sistema Automatizado de Investment Banking\\n\\n---\\n\\n{{ $('Edit Fields1').item.json.geminiAnalysis }}\\n\\n---\\n\\n**Disclaimers:**\\n- Esta análise foi gerada automaticamente\\n- Os dados podem estar desatualizados\\n- Recomenda-se verificação manual para decisões de investimento\\n- Este documento é para fins informativos apenas\\n\\n*Powered by n8n + Claude AI*"
+              "text": "={{ $('Edit Fields1').item.json.geminiAnalysis }}"
             }
           ]
         }
@@ -140,7 +140,7 @@
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
       "position": [
-        1360,
+        1860,
         0
       ],
       "id": "788247b4-160d-4c6b-b913-389b9f01a955",
@@ -164,11 +164,11 @@
           "parameters": [
             {
               "name": "contents",
-              "value": "={{ $json.contents }}"
+              "value": "={{ $('Edit Fields2').item.json.contents }}"
             },
             {
               "name": "generationConfig",
-              "value": "={{ $json.generationConfig[0] }}"
+              "value": "={{ $('Edit Fields2').item.json.generationConfig[0] }}"
             }
           ]
         },
@@ -177,7 +177,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        660,
+        1160,
         0
       ],
       "id": "229e38ca-c925-4b57-a674-429628c67f53",
@@ -190,14 +190,26 @@
             {
               "id": "74b68604-4064-412f-b208-2e0ffb25975b",
               "name": "contents",
-              "value": "={{   [         {           \"parts\": [             {               \"text\": \"Você é um analista sênior de Investment Banking especializado no mercado brasileiro de capitais. Preciso de uma análise profissional e detalhada sobre a empresa '\"+ $json['\"empresa\"']+ \"'.\\n\\n## INSTRUÇÕES ESPECÍFICAS:\\n- Foque APENAS em empresas brasileiras de capital aberto (listadas na B3)\\n- Use linguagem técnica apropriada para profissionais de IB\\n- Seja factual e preciso com dados financeiros\\n- Indique claramente quando informações estão desatualizadas\\n- Se a empresa não for brasileira/pública, informe imediatamente\\n- Pesquise na internet para buscar informações atualizadas sobre a empresa\\n -Busque 2-3 noticias recentes sobre a empresa, inclua o título da noticia e o link para a materia original \\n\\n## ESTRUTURA OBRIGATÓRIA:\\n\\n### 📊 RESUMO EXECUTIVO\\n**Setor:** [Classificação setorial B3]\\n**Ticker:** [Código de negociação]\\n**Status:** [Ativo/Suspenso/etc]\\n**Market Cap:** [Se disponível]\\n\\n### 🏢 PERFIL CORPORATIVO\\n**Fundação:** [Ano e contexto]\\n**Sede:** [Localização]\\n**Principais Atividades:** [Core business detalhado]\\n**Posicionamento:** [Market share, ranking setorial]\\n**Modelo de Negócio:** [Revenue streams principais]\\n\\n### 📈 INDICADORES FINANCEIROS (Últimos dados disponíveis)\\n**Preço da Ação:** [Valor e data]\\n**Variação 52 semanas:** [Min/Max]\\n**Volume médio:** [Se disponível]\\n**P/L:** [Se aplicável]\\n**ROE:** [Se disponível]\\n**Dividend Yield:** [Se aplicável]\\n\\n### 📰 ÚLTIMAS NOTÍCIAS RELEVANTES (2-3 mais recentes)\\nPara cada notícia:\\n**[Data] - Título**\\n- Resumo: [2-3 linhas sobre impacto nos negócios]\\n- Relevância: [Alta/Média/Baixa para investidores]\\n- Fonte: [Se disponível]\\n\\n### 🎯 ANÁLISE TÉCNICA\\n**Pontos Fortes:**\\n- [3-4 pontos específicos]\\n\\n**Riscos Identificados:**\\n- [3-4 riscos setoriais/específicos]\\n\\n**Catalisadores Potenciais:**\\n- [Próximos eventos relevantes]\\n\\n### 🔮 OUTLOOK\\n**Perspectiva Trimestral:** [Próximo trimestre]\\n**Perspectiva Anual:** [12 meses]\\n**Consenso de Mercado:** [Se houver informação disponível]\\n\\n### 📰 NOTÍCIAS\\n**Titulo da Notícia:** \\n**Descricão da Notícia:** \\n**Link da Notícia:**\\n\\n## AVISOS IMPORTANTES:\\n- Dados podem estar desatualizados\\n- Não constitui recomendação de investimento\\n- Verificar informações em fontes oficiais\\n- Para uso informativo apenas\\n\\n---\\n*Análise gerada por IA - Validação manual recomendada*\"             }           ]         }       ] }}",
+              "value": "={{   [         {           \"parts\": [             {               \"text\": \"Você é um analista sênior de Investment Banking especializado no mercado brasileiro de capitais.Você receberá dados, que devem ser analisados e tratados, sobre uma empresa brasileira listada na B3, incluindo:\\n1. **Dados Sobre a empresa** - Informações sobre a empresa\\n2. **Dados de Cotação** (formatacaoQuote) - Informações financeiras e de mercado\\n3. **Dados de Notícias** (formatacaoNews) - Notícias recentes sobre a empresa \\n---\\n\\n## DADOS RECEBIDOS:\\n ### 📊 INFORMAÇÕES DE COTAÇÃO:\\n '\"+ $json.formatacaoQuote + \"' \\n ### 📰 NOTÍCIAS COLETADAS: \\n '\"+ $json.formatacaoNews + \"'\\n\\n---\\n\\n## INSTRUÇÕES DE PROCESSAMENTO:\\n\\n### 🔍 Análise das Notícias:\\n1. Avalie TODAS as notícias fornecidas no array articles\\n2. Selecione as 3 MAIS RELEVANTES baseado nos critérios:\\n   - Impacto financeiro direto na empresa\\n   - Relevância operacional (resultados, projetos, mudanças estratégicas)\\n   - Atualidade (priorize notícias mais recentes)\\n   - Fonte confiável (InfoMoney, Valor, Reuters, etc.)\\n3. Descarte notícias sobre:\\n   - Mercado geral sem menção específica da empresa\\n   - Análises técnicas genéricas do Ibovespa\\n   - Notícias repetitivas ou similares\\n\\n### 📈 Análise da Cotação:\\n1. Extraia os dados mais relevantes do JSON de cotação\\n2. Calcule métricas importantes quando possível\\n3. Interprete os indicadores no contexto do mercado brasileiro\\n\\n---\\n\\n## ESTRUTURA OBRIGATÓRIA DO RELATÓRIO:\\n\\n# 📊 ANÁLISE EMPRESARIAL - {NOME_EMPRESA} ({TICKER})\\n\\n**Data da Análise:** {DATA_ATUAL}  \\n**Ticker:** {TICKER}  \\n**Razão Social:** {NOME_COMPLETO}  \\n---\\n\\n## 🏢 PERFIL CORPORATIVO\\n\\n**Fundação:** {Ano e contexto}\\n**Sede:** {Localização}\\n**Principais Atividades:** {Core business detalhado}\\n**Posicionamento:** {Market share, ranking setorial}\\n**Modelo de Negócio:** {Revenue streams principais}\\n\\n---\\n\\n## 💰 RESUMO FINANCEIRO\\n\\n**Preço Atual:** R$ {PRECO_ATUAL}  \\n**Variação Diária:** {VARIACAO_PERCENTUAL}% ({VARIACAO_ABSOLUTA})  \\n**Abertura:** R$ {PRECO_ABERTURA}  \\n**Máxima do Dia:** R$ {MAXIMA_DIA}  \\n**Mínima do Dia:** R$ {MINIMA_DIA}  \\n**Volume:** {VOLUME_FORMATADO}  \\n\\n**Variação 52 Semanas:** R$ {MIN_52S} - R$ {MAX_52S}  \\n**Market Cap:** R$ {MARKET_CAP_FORMATADO}  \\n**P/L:** {PE_RATIO}  \\n**LPA:** R$ {EARNINGS_PER_SHARE}  \\n\\n---\\n\\n## 📈 ANÁLISE DE PERFORMANCE\\n\\n### Contexto Atual\\n{ANÁLISE_DO_PREÇO_ATUAL_EM_RELAÇÃO_AOS_RANGES}\\n\\n### Indicadores Técnicos\\n{INTERPRETAÇÃO_DOS_MÚLTIPLOS_E_MÉTRICAS}\\n\\n---\\n\\n## 📰 NOTÍCIAS MAIS RELEVANTES\\n\\n### 🔥 Notícia 1: {TÍTULO_NOTÍCIA_1}\\n**Data:** {DATA_NOTÍCIA_1}  \\n**Link:** {LINK_NOTÍCIA_1}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n### 📊 Notícia 2: {TÍTULO_NOTÍCIA_2}  \\n**Data:** {DATA_NOTÍCIA_2}  \\n**Link:** {LINK_NOTÍCIA_2}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n### 💼 Notícia 3: {TÍTULO_NOTÍCIA_3}\\n**Data:** {DATA_NOTÍCIA_3}  \\n**Link:** {LINK_NOTÍCIA_3}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n---\\n\\n## 🎯 ANÁLISE INTEGRADA\\n\\n### Síntese dos Dados\\n{COMBINE_INFORMAÇÕES_DE_COTAÇÃO_E_NOTÍCIAS_PARA_CRIAR_UMA_VISÃO_HOLÍSTICA}\\n\\n### Pontos de Atenção\\n- {RISCOS_IDENTIFICADOS_NAS_NOTÍCIAS}\\n- {OPORTUNIDADES_IDENTIFICADAS}\\n- {FATORES_TÉCNICOS_RELEVANTES}\\n\\n### Catalisadores Potenciais\\n- {EVENTOS_FUTUROS_MENCIONADOS_NAS_NOTÍCIAS}\\n- {MARCOS_TÉCNICOS_IMPORTANTES}\\n\\n---\\n\\n##!DISCLAIMERS\\n\\n- **Dados de Mercado:** Baseados na última sessão disponível\\n- **Notícias:** Selecionadas por relevância e impacto potencial  \\n- **Não é Recomendação:** Este documento é apenas informativo\\n- **Verificação:** Recomenda-se confirmação em fontes oficiais\\n- **Risco:** Todo investimento envolve riscos\\n\\n---\\n\\n**Relatório Gerado por:** Sistema Automatizado de Investment Banking  \\n**Modelo:** Gemini 1.5 Flash  \\n**Timestamp:** {TIMESTAMP_GERACAO}\\n\\n---\\n\\n## REGRAS CRÍTICAS:\\n\\n###**DEVE FAZER:**\\n- Usar APENAS dados fornecidos, excluindo a seção \\\"🏢 PERFIL CORPORATIVO\\\" que deve buscar informações sobre\\n- Formatar valores monetários em Real brasileiro (R$)\\n- Datar todas as informações adequadamente\\n- Focar em aspectos relevantes para Investment Banking\\n- Manter linguagem técnica e profissional\\n- Quantificar impactos quando possível\\n\\n###**NÃO DEVE FAZER:**\\n- Inventar dados não presentes\\n- Fazer recomendações de compra/venda\\n- Usar informações de fontes externas aos dados fornecidos\\n- Repetir notícias com conteúdo similar\\n- Incluir análises especulativas sem base nos dados\\n\\n### **CRITÉRIOS PARA SELEÇÃO DE NOTÍCIAS:**\\n\\n**Prioridade Alta:**\\n- Resultados trimestrais/anuais\\n- Dividendos e proventos\\n- Mudanças na gestão\\n- Grandes investimentos/desinvestimentos\\n- Aquisições/fusões\\n- Aprovações regulatórias importantes\\n\\n**Prioridade Média:**\\n- Análises de bancos de investimento\\n- Mudanças de rating\\n- Notícias setoriais específicas\\n- Parcerias estratégicas\\n\\n**Prioridade Baixa:**\\n- Notícias do mercado geral\\n- Análises técnicas do Ibovespa\\n- Comentários genéricos sobre o setor\\n\\n---\\n\\n## EXEMPLO DE FORMATAÇÃO DE VALORES:\\n\\n- **Monetary:** R$ 32,53 (não $32.53)\\n- **Percentage:** +2,46% (não 2.46%)\\n- **Volume:** 74,8 milhões (não 74819900)\\n- **Market Cap:** R$ 400,6 bilhões (não 400583262534)\\n\\n---\\n\\n**EXECUTE A ANÁLISE AGORA COM OS DADOS FORNECIDOS.** Caso os dados não aparecem de forma clara, apresente no final do documento como eles foram apresentados\"             }           ]         }       ] }}",
               "type": "array"
             },
             {
               "id": "11f406b1-7cfa-43c4-9aa4-ad611699aff6",
-              "name": "generationConfig",
+              "name": "=generationConfig",
               "value": "={{ [{         \"temperature\": 0.3,         \"maxOutputTokens\": 2048,         \"topP\": 0.8,         \"topK\": 40       }] }}",
               "type": "array"
+            },
+            {
+              "id": "305a0600-d10c-4590-9b85-47dc2727c1c2",
+              "name": "teste",
+              "value": "={{ $json.formatacaoNews }}",
+              "type": "string"
+            },
+            {
+              "id": "1717a0e8-42bd-4bdc-9b76-024ad7cec2de",
+              "name": "teste",
+              "value": "={{ $json.formatacaoQuote }}",
+              "type": "string"
             }
           ]
         },
@@ -206,7 +218,7 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        440,
+        980,
         0
       ],
       "id": "af1a6685-d118-4a44-8d1b-131878de20cd",
@@ -247,7 +259,7 @@
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
       "position": [
-        1000,
+        1500,
         0
       ],
       "id": "97de815a-efc1-42c7-a06e-2dd8ded95a83",
@@ -261,7 +273,7 @@
     },
     {
       "parameters": {
-        "url": "= https://brapi.dev/api/quote/{{ $json['\"empresa\"'] }}",
+        "url": "= https://brapi.dev/api/quote/{{ $('Edit Fields').item.json['\"empresa\"'] }}",
         "sendQuery": true,
         "queryParameters": {
           "parameters": [
@@ -277,7 +289,7 @@
       "typeVersion": 4.2,
       "position": [
         440,
-        200
+        0
       ],
       "id": "9a618cb4-cdd0-41f0-8494-224528de3348",
       "name": "BRAPI-QUOTE"
@@ -290,7 +302,7 @@
           "parameters": [
             {
               "name": "q",
-              "value": "={{ $json['\"empresa\"'] }}"
+              "value": "={{ $('Edit Fields').item.json['\"empresa\"'] }}"
             },
             {
               "name": "language",
@@ -311,11 +323,40 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        440,
-        380
+        640,
+        0
       ],
       "id": "c7197e56-a5ce-4313-9de1-9605d772106b",
       "name": "NEWSAPI-NEWS"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cef7bd22-ee59-4379-b8cd-3a1265e6ee6d",
+              "name": "formatacaoNews",
+              "value": "={{ $json.articles }}",
+              "type": "string"
+            },
+            {
+              "id": "e334ec39-e94d-4ad7-bef7-25c30b2485a6",
+              "name": "formatacaoQuote",
+              "value": "={{ $('BRAPI-QUOTE').item.json.results }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        820,
+        0
+      ],
+      "id": "492e7c9d-654a-484c-adf6-601299b33fa6",
+      "name": "Edit Fields3"
     }
   ],
   "pinData": {},
@@ -335,17 +376,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields2",
-            "type": "main",
-            "index": 0
-          },
-          {
             "node": "BRAPI-QUOTE",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "NEWSAPI-NEWS",
             "type": "main",
             "index": 0
           }
@@ -422,13 +453,46 @@
           }
         ]
       ]
+    },
+    "BRAPI-QUOTE": {
+      "main": [
+        [
+          {
+            "node": "NEWSAPI-NEWS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NEWSAPI-NEWS": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "928fe1de-49a2-4723-8159-f9516592c093",
+  "versionId": "e608c1c4-f1cb-4752-abad-5d737da39203",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "f703af88e39c1bdf94c33361d2b3287ee191ca47808bb38bf2428e19901c623a"
