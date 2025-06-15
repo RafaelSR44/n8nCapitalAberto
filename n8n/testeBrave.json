@@ -1,0 +1,1924 @@
+{
+  "name": "Investment Banking Research - Complete",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "empresa-research-complete",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "id": "webhook-start",
+      "name": "Webhook",
+      "webhookId": "empresa-research-webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "empresa-field",
+              "name": "empresa",
+              "value": "={{ $json.empresa }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [220, 0],
+      "id": "edit-fields",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Preço da Ação"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [440, 0],
+      "id": "brave-search-preco",
+      "name": "Brave Search - Preço Ação",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Noticias"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [660, 0],
+      "id": "brave-search-noticias",
+      "name": "Brave Search - Notícias",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} ROE"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [880, 0],
+      "id": "brave-search-roe",
+      "name": "Brave Search - ROE",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Ticker B3"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [1100, 0],
+      "id": "brave-search-ticker",
+      "name": "Brave Search - Ticker B3",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Setor de Atuação"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [1320, 0],
+      "id": "brave-search-setor",
+      "name": "Brave Search - Setor",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Market Cap"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [1540, 0],
+      "id": "brave-search-market-cap",
+      "name": "Brave Search - Market Cap",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} P/L"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [1760, 0],
+      "id": "brave-search-pl",
+      "name": "Brave Search - P/L",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Dividend Yield"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [1980, 0],
+      "id": "brave-search-dividend",
+      "name": "Brave Search - Dividend",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Volume de Negociação"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [2200, 0],
+      "id": "brave-search-volume",
+      "name": "Brave Search - Volume",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Variação 52 semanas"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [2420, 0],
+      "id": "brave-search-variacao",
+      "name": "Brave Search - Variação 52s",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} EBITDA"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [2640, 0],
+      "id": "brave-search-ebitda",
+      "name": "Brave Search - EBITDA",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Receita Líquida"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [2860, 0],
+      "id": "brave-search-receita",
+      "name": "Brave Search - Receita",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Lucro Líquido"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [3080, 0],
+      "id": "brave-search-lucro",
+      "name": "Brave Search - Lucro",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Margem Líquida"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [3300, 0],
+      "id": "brave-search-margem",
+      "name": "Brave Search - Margem",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Endividamento"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [3520, 0],
+      "id": "brave-search-endividamento",
+      "name": "Brave Search - Endividamento",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Patrimônio Líquido"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [3740, 0],
+      "id": "brave-search-patrimonio",
+      "name": "Brave Search - Patrimônio",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Free Cash Flow"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [3960, 0],
+      "id": "brave-search-fcf",
+      "name": "Brave Search - FCF",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Fundação História"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [4180, 0],
+      "id": "brave-search-fundacao",
+      "name": "Brave Search - Fundação",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Sede Localização"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [4400, 0],
+      "id": "brave-search-sede",
+      "name": "Brave Search - Sede",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Principais Produtos"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [4620, 0],
+      "id": "brave-search-produtos",
+      "name": "Brave Search - Produtos",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Principais Serviços"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [4840, 0],
+      "id": "brave-search-servicos",
+      "name": "Brave Search - Serviços",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Modelo de Negócio"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [5060, 0],
+      "id": "brave-search-modelo",
+      "name": "Brave Search - Modelo",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Principais Concorrentes"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [5280, 0],
+      "id": "brave-search-concorrentes",
+      "name": "Brave Search - Concorrentes",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Participação de Mercado"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [5500, 0],
+      "id": "brave-search-market-share",
+      "name": "Brave Search - Market Share",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Rating de Crédito"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [5720, 0],
+      "id": "brave-search-rating",
+      "name": "Brave Search - Rating",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Governança Corporativa"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [5940, 0],
+      "id": "brave-search-governanca",
+      "name": "Brave Search - Governança",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Estrutura Acionária"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [6160, 0],
+      "id": "brave-search-estrutura",
+      "name": "Brave Search - Estrutura",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Conselho de Administração"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [6380, 0],
+      "id": "brave-search-conselho",
+      "name": "Brave Search - Conselho",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Diretoria Executiva"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [6600, 0],
+      "id": "brave-search-diretoria",
+      "name": "Brave Search - Diretoria",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Relatórios Trimestrais"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [6820, 0],
+      "id": "brave-search-relatorios",
+      "name": "Brave Search - Relatórios",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Demonstrações Financeiras"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [7040, 0],
+      "id": "brave-search-demonstracoes",
+      "name": "Brave Search - DFs",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Guidance 2024"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [7260, 0],
+      "id": "brave-search-guidance-2024",
+      "name": "Brave Search - Guidance 2024",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Guidance 2025"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [7480, 0],
+      "id": "brave-search-guidance-2025",
+      "name": "Brave Search - Guidance 2025",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Projeções Analistas"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [7700, 0],
+      "id": "brave-search-projecoes",
+      "name": "Brave Search - Projeções",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Consenso de Mercado"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [7920, 0],
+      "id": "brave-search-consenso",
+      "name": "Brave Search - Consenso",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Riscos Operacionais"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [8140, 0],
+      "id": "brave-search-riscos-operacionais",
+      "name": "Brave Search - Riscos Op",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Riscos Regulatórios"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [8360, 0],
+      "id": "brave-search-riscos-regulatorios",
+      "name": "Brave Search - Riscos Reg",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Riscos de Mercado"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [8580, 0],
+      "id": "brave-search-riscos-mercado",
+      "name": "Brave Search - Riscos Mercado",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Fatores ESG"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [8800, 0],
+      "id": "brave-search-esg",
+      "name": "Brave Search - ESG",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Sustentabilidade"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [9020, 0],
+      "id": "brave-search-sustentabilidade",
+      "name": "Brave Search - Sustentabilidade",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Responsabilidade Social"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [9240, 0],
+      "id": "brave-search-responsabilidade",
+      "name": "Brave Search - Resp Social",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Mudanças Regulamentares"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [9460, 0],
+      "id": "brave-search-mudancas-reg",
+      "name": "Brave Search - Mudanças Reg",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Aprovações Regulatórias"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [9680, 0],
+      "id": "brave-search-aprovacoes",
+      "name": "Brave Search - Aprovações",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Licenças Operacionais"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [9900, 0],
+      "id": "brave-search-licencas",
+      "name": "Brave Search - Licenças",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Investimentos Capex"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [10120, 0],
+      "id": "brave-search-capex",
+      "name": "Brave Search - Capex",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Planos de Expansão"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [10340, 0],
+      "id": "brave-search-expansao",
+      "name": "Brave Search - Expansão",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Aquisições Recentes"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [10560, 0],
+      "id": "brave-search-aquisicoes",
+      "name": "Brave Search - Aquisições",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Desinvestimentos"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [10780, 0],
+      "id": "brave-search-desinvestimentos",
+      "name": "Brave Search - Desinvestimentos",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Joint Ventures"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [11000, 0],
+      "id": "brave-search-joint-ventures",
+      "name": "Brave Search - JVs",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Parcerias Estratégicas"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [11220, 0],
+      "id": "brave-search-parcerias",
+      "name": "Brave Search - Parcerias",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Inovação Tecnológica"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [11440, 0],
+      "id": "brave-search-inovacao",
+      "name": "Brave Search - Inovação",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Transformação Digital"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [11660, 0],
+      "id": "brave-search-digital",
+      "name": "Brave Search - Digital",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Pesquisa e Desenvolvimento"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [11880, 0],
+      "id": "brave-search-rd",
+      "name": "Brave Search - R&D",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Patentes"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [12100, 0],
+      "id": "brave-search-patentes",
+      "name": "Brave Search - Patentes",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Sazonalidade Negócios"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [12320, 0],
+      "id": "brave-search-sazonalidade",
+      "name": "Brave Search - Sazonalidade",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Exposição Cambial"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [12540, 0],
+      "id": "brave-search-cambial",
+      "name": "Brave Search - Cambial",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Hedge Cambial"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [12760, 0],
+      "id": "brave-search-hedge",
+      "name": "Brave Search - Hedge",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Exposição Commodities"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [12980, 0],
+      "id": "brave-search-commodities",
+      "name": "Brave Search - Commodities",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Contratos Futuros"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [13200, 0],
+      "id": "brave-search-futuros",
+      "name": "Brave Search - Futuros",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Rating Agências"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [13420, 0],
+      "id": "brave-search-rating-agencias",
+      "name": "Brave Search - Rating Agências",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Outlook Rating"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [13640, 0],
+      "id": "brave-search-outlook",
+      "name": "Brave Search - Outlook",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Custo de Capital"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [13860, 0],
+      "id": "brave-search-custo-capital",
+      "name": "Brave Search - Custo Capital",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Política de Dividendos"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [14080, 0],
+      "id": "brave-search-politica-dividendos",
+      "name": "Brave Search - Pol Dividendos",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Histórico Dividendos"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [14300, 0],
+      "id": "brave-search-historico-dividendos",
+      "name": "Brave Search - Hist Dividendos",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Programa de Recompra"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [14520, 0],
+      "id": "brave-search-recompra",
+      "name": "Brave Search - Recompra",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Spin-offs"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [14740, 0],
+      "id": "brave-search-spinoffs",
+      "name": "Brave Search - Spin-offs",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} IPO Subsidiárias"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [14960, 0],
+      "id": "brave-search-ipo-subs",
+      "name": "Brave Search - IPO Subs",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Reestruturações"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [15180, 0],
+      "id": "brave-search-reestruturacoes",
+      "name": "Brave Search - Reestruturações",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "query": "{{ $('Edit Fields').item.json[\"empresa\"] }} Reorganizações Societárias"
+      },
+      "type": "@brave/n8n-nodes-brave-search.braveSearch",
+      "typeVersion": 1,
+      "position": [15400, 0],
+      "id": "brave-search-reorganizacoes",
+      "name": "Brave Search - Reorganizações",
+      "credentials": {
+        "braveSearchApi": {
+          "id": "rswxGmBfxNINrRaf",
+          "name": "Brave Search account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Preço Ação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Preço Ação": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Notícias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Notícias": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - ROE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - ROE": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Ticker B3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Ticker B3": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Setor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Setor": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Market Cap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Market Cap": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - P/L",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - P/L": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Dividend",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Dividend": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Volume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Volume": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Variação 52s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Variação 52s": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - EBITDA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - EBITDA": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Receita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Receita": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Lucro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Lucro": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Margem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Margem": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Endividamento",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Endividamento": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Patrimônio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Patrimônio": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - FCF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - FCF": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Fundação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Fundação": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Sede",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Sede": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Produtos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Produtos": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Serviços",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Serviços": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Modelo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Modelo": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Concorrentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Concorrentes": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Market Share",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Market Share": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Rating",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Rating": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Governança",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Governança": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Estrutura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Estrutura": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Conselho",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Conselho": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Diretoria",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Diretoria": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Relatórios",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Relatórios": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - DFs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - DFs": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Guidance 2024",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Guidance 2024": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Guidance 2025",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Guidance 2025": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Projeções",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Projeções": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Consenso",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Consenso": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Riscos Op",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Riscos Op": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Riscos Reg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Riscos Reg": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Riscos Mercado",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Riscos Mercado": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - ESG",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - ESG": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Sustentabilidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Sustentabilidade": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Resp Social",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Resp Social": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Mudanças Reg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Mudanças Reg": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Aprovações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Aprovações": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Licenças",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Licenças": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Capex",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Capex": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Expansão",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Expansão": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Aquisições",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Aquisições": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Desinvestimentos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Desinvestimentos": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - JVs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - JVs": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Parcerias",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Parcerias": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Inovação",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Inovação": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Digital",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Digital": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - R&D",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - R&D": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Patentes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Patentes": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Sazonalidade",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Sazonalidade": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Cambial",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Cambial": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Hedge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Hedge": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Commodities",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Commodities": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Futuros",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Futuros": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Rating Agências",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Rating Agências": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Outlook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Outlook": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Custo Capital",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Custo Capital": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Pol Dividendos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Pol Dividendos": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Hist Dividendos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Hist Dividendos": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Recompra",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Recompra": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Spin-offs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Spin-offs": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - IPO Subs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - IPO Subs": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Reestruturações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brave Search - Reestruturações": {
+      "main": [
+        [
+          {
+            "node": "Brave Search - Reorganizações",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "complete-research-workflow",
+  "meta": {
+    "instanceId": "investment-banking-complete-research"
+  },
+  "id": "complete-empresa-research",
+  "tags": ["investment-banking", "brave-search", "complete-research"]
+}

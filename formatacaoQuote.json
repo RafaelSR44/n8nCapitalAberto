@@ -1,0 +1,31 @@
+[
+  {
+    "results": [
+      {
+        "currency": "BRL",
+        "marketCap": 400583262534,
+        "shortName": "PETROBRAS   PN  EDJ N2",
+        "longName": "Petróleo Brasileiro S.A. - Petrobras",
+        "regularMarketChange": 0.78,
+        "regularMarketChangePercent": 2.4570000000000003,
+        "regularMarketTime": "2025-06-13T20:07:39.000Z",
+        "regularMarketPrice": 32.53,
+        "regularMarketDayHigh": 33.17,
+        "regularMarketDayRange": "32.17 - 33.17",
+        "regularMarketDayLow": 32.17,
+        "regularMarketVolume": 74819900,
+        "regularMarketPreviousClose": 31.75,
+        "regularMarketOpen": 29.26,
+        "fiftyTwoWeekRange": "28.86 - 40.76",
+        "fiftyTwoWeekLow": 28.86,
+        "fiftyTwoWeekHigh": 40.76,
+        "symbol": "PETR4",
+        "logourl": "https://icons.brapi.dev/icons/PETR4.svg",
+        "priceEarnings": 8.311903996571306,
+        "earningsPerShare": 3.7332483
+      }
+    ],
+    "requestedAt": "2025-06-15T00:19:05.770Z",
+    "took": "0ms"
+  }
+]

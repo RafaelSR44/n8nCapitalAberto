@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisa Automatizada de Empresas - Investment Banking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn-container {
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            color: #667eea;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e1e5e9;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .companies-list {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .company-suggestion {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            border: 1px solid #e9ecef;
+        }
+
+        .company-suggestion:hover {
+            background: #e9ecef;
+        }
+
+        .search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            background: white;
+            margin-top: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-result-item:hover {
+            background: #f8f9fa;
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .company-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .company-tickers {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ticker-badge {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .ticker-badge:hover {
+            background: #764ba2;
+        }
+
+        .selected-company {
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            border-radius: 8px;
+            color: #155724;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .clear-btn {
+            background: #721c24;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-btn:hover {
+            background: #a42834;
+        }
+
+        .no-results {
+            padding: 16px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">IB</div>
+        <h1>Pesquisa de Empresas</h1>
+        <p class="subtitle">Análise automatizada para Investment Banking</p>
+        
+        <form id="empresaForm">
+            <div class="form-group">
+                <label for="empresaSearch">Buscar Empresa B3:</label>
+                <input type="text" id="empresaSearch" placeholder="Digite para buscar empresas na B3..." autocomplete="off">
+                <input type="hidden" id="nomeEmpresa" name="nomeEmpresa" required>
+            </div>
+            
+            <div id="searchResults" class="search-results" style="display: none;">
+                <!-- Resultados da busca serão inseridos aqui -->
+            </div>
+            
+            <div id="selectedCompany" class="selected-company" style="display: none;">
+                <strong>Empresa Selecionada:</strong>
+                <span id="selectedCompanyName"></span>
+                <button type="button" onclick="clearSelection()" class="clear-btn">×</button>
+            </div>
+            
+            <div class="btn-container">
+                <button type="submit" class="btn-primary" id="submitBtn">
+                    🔍 Iniciar Pesquisa
+                </button>
+            </div>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            Processando análise da empresa...
+        </div>
+        
+        <div class="result" id="result"></div>
+        
+        <div class="footer">
+            Powered by n8n + Gemini AI • Todas as empresas B3 (400+ ativos) • Investment Banking Research Tool
+        </div>
+    </div>
+
+    <script>
+        // Configuração do webhook n8n - SUBSTITUA PELA SUA URL
+        const N8N_WEBHOOK_URL = 'https://rafaelsr44.app.n8n.cloud/webhook-test/empresa-research';
+        
+        // Base de dados das empresas B3 (atualizada com dados de 2024/2025)
+        const empresasB3 = [
+            { name: "Petrobras", tickers: ["PETR3", "PETR4"] },
+            { name: "Vale", tickers: ["VALE3"] },
+            { name: "Itaú Unibanco", tickers: ["ITUB3", "ITUB4"] },
+            { name: "Banco do Brasil", tickers: ["BBAS3"] },
+            { name: "Banco Bradesco", tickers: ["BBDC3", "BBDC4"] },
+            { name: "Ambev", tickers: ["ABEV3"] },
+            { name: "WEG", tickers: ["WEGE3"] },
+            { name: "B3", tickers: ["B3SA3"] },
+            { name: "JBS", tickers: ["JBSS3"] },
+            { name: "Eletrobras", tickers: ["ELET3", "ELET6"] },
+            { name: "Magazine Luiza", tickers: ["MGLU3"] },
+            { name: "Itaúsa", tickers: ["ITSA3", "ITSA4"] },
+            { name: "Hapvida", tickers: ["HAPV3"] },
+            { name: "Cogna", tickers: ["COGN3"] },
+            { name: "Vivo", tickers: ["VIVT3"] },
+            { name: "Azul", tickers: ["AZUL4"] },
+            { name: "Copel", tickers: ["CPLE3", "CPLE5", "CPLE6"] },
+            { name: "Raízen", tickers: ["RAIZ4"] },
+            { name: "Cosan", tickers: ["CSAN3"] },
+            { name: "Marfrig", tickers: ["MRFG3"] },
+            { name: "RaiaDrogasil", tickers: ["RADL3"] },
+            { name: "Minerva", tickers: ["BEEF3"] },
+            { name: "Eneva", tickers: ["ENEV3"] },
+            { name: "Natura", tickers: ["NTCO3"] },
+            { name: "BRF", tickers: ["BRFS3"] },
+            { name: "Méliuz", tickers: ["CASH3"] },
+            { name: "Assaí", tickers: ["ASAI3"] },
+            { name: "Lojas Renner", tickers: ["LREN3"] },
+            { name: "Cemig", tickers: ["CMIG3", "CMIG4"] },
+            { name: "Localiza", tickers: ["RENT3"] },
+            { name: "Gerdau", tickers: ["GGBR3", "GGBR4"] },
+            { name: "TIM", tickers: ["TIMS3"] },
+            { name: "Vibra Energia", tickers: ["VBBR3"] },
+            { name: "CVC", tickers: ["CVCB3"] },
+            { name: "Marcopolo", tickers: ["POMO3", "POMO4"] },
+            { name: "Siderúrgica Nacional", tickers: ["CSNA3"] },
+            { name: "JHSF", tickers: ["JHSF3"] },
+            { name: "Gafisa", tickers: ["GFSA3"] },
+            { name: "Petz", tickers: ["PETZ3"] },
+            { name: "Multilaser", tickers: ["MLAS3"] },
+            { name: "Smart Fit", tickers: ["SMFT3"] },
+            { name: "GOL", tickers: ["GOLL4"] },
+            { name: "MRV", tickers: ["MRVE3"] },
+            { name: "Ânima Educação", tickers: ["ANIM3"] },
+            { name: "Grupo Pão de Açúcar", tickers: ["PCAR3"] },
+            { name: "Banco BTG Pactual", tickers: ["BPAC3", "BPAC5", "BPAC11"] },
+            { name: "3R Petroleum", tickers: ["BRAV3"] },
+            { name: "Metalúrgica Gerdau", tickers: ["GOAU3", "GOAU4"] },
+            { name: "Equatorial Energia", tickers: ["EQTL3"] },
+            { name: "Usiminas", tickers: ["USIM3", "USIM5", "USIM6"] },
+            { name: "PetroRio", tickers: ["PRIO3"] },
+            { name: "CSN Mineração", tickers: ["CMIN3"] },
+            { name: "YDUQS", tickers: ["YDUQ3"] },
+            { name: "Locaweb", tickers: ["LWSA3"] },
+            { name: "Cyrela", tickers: ["CYRE3"] },
+            { name: "Hidrovias do Brasil", tickers: ["HBSA3"] },
+            { name: "Santos Brasil", tickers: ["STBP3"] },
+            { name: "Alpargatas", tickers: ["ALPA3", "ALPA4"] },
+            { name: "Oi", tickers: ["OIBR3", "OIBR4"] },
+            { name: "Klabin", tickers: ["KLBN3", "KLBN4", "KLBN11"] },
+            { name: "BB Seguridade", tickers: ["BBSE3"] },
+            { name: "Rumo", tickers: ["RAIL3"] },
+            { name: "Fleury", tickers: ["FLRY3"] },
+            { name: "Ultrapar", tickers: ["UGPA3"] },
+            { name: "Rede D'Or", tickers: ["RDOR3"] },
+            { name: "Caixa Seguridade", tickers: ["CXSE3"] },
+            { name: "Embraer", tickers: ["EMBR3"] },
+            { name: "Movida", tickers: ["MOVI3"] },
+            { name: "Simpar", tickers: ["SIMH3"] },
+            { name: "C&A", tickers: ["CEAB3"] },
+            { name: "Vivara", tickers: ["VIVA3"] },
+            { name: "EcoRodovias", tickers: ["ECOR3"] },
+            { name: "Totvs", tickers: ["TOTS3"] },
+            { name: "CBA", tickers: ["CBAV3"] },
+            { name: "Recrusul", tickers: ["RCSL3", "RCSL4"] },
+            { name: "Suzano", tickers: ["SUZB3"] },
+            { name: "Cury", tickers: ["CURY3"] },
+            { name: "Allos", tickers: ["ALOS3"] },
+            { name: "Odontoprev", tickers: ["ODPV3"] },
+            { name: "PetroRecôncavo", tickers: ["RECV3"] },
+            { name: "Lojas Quero-Quero", tickers: ["LJQQ3"] },
+            { name: "EZTEC", tickers: ["EZTC3"] },
+            { name: "3tentos", tickers: ["TTEN3"] },
+            { name: "Braskem", tickers: ["BRKM3", "BRKM5", "BRKM6"] },
+            { name: "COPASA", tickers: ["CSMG3"] },
+            { name: "Auren Energia", tickers: ["AURE3"] },
+            { name: "Randon", tickers: ["RAPT3", "RAPT4"] },
+            { name: "Grendene", tickers: ["GRND3"] },
+            { name: "Azevedo & Travassos", tickers: ["AZEV3", "AZEV4", "AZEV11"] },
+            { name: "Multiplan", tickers: ["MULT3"] },
+            { name: "Grupo Mateus", tickers: ["GMAT3"] },
+            { name: "Automob", tickers: ["AMOB3"] },
+            { name: "Banco Pan", tickers: ["BPAN4"] },
+            { name: "Direcional", tickers: ["DIRR3"] },
+            { name: "Qualicorp", tickers: ["QUAL3"] },
+            { name: "Carrefour Brasil", tickers: ["CRFB3"] },
+            { name: "Bradespar", tickers: ["BRAP3", "BRAP4"] },
+            { name: "GPS", tickers: ["GGPS3"] },
+            { name: "Construtora Tenda", tickers: ["TEND3"] },
+            { name: "SLC Agrícola", tickers: ["SLCE3"] },
+            { name: "Taesa", tickers: ["TAEE3", "TAEE4", "TAEE11"] },
+            { name: "Banco Santander", tickers: ["SANB3", "SANB4", "SANB11"] },
+            { name: "ISA Energia", tickers: ["ISAE3", "ISAE4"] },
+            { name: "Arezzo", tickers: ["AZZA3"] },
+            { name: "Banrisul", tickers: ["BRSR3", "BRSR5", "BRSR6"] },
+            { name: "Viveo", tickers: ["VVEO3"] },
+            { name: "Hypera", tickers: ["HYPE3"] },
+            { name: "Casas Bahia", tickers: ["BHIA3"] },
+            { name: "São Martinho", tickers: ["SMTO3"] },
+            { name: "Engie", tickers: ["EGIE3"] },
+            { name: "Enjoei", tickers: ["ENJU3"] },
+            { name: "Grupo SBF", tickers: ["SBFG3"] },
+            { name: "Oncoclínicas", tickers: ["ONCO3"] },
+            { name: "Espaçolaser", tickers: ["ESPA3"] },
+            { name: "Iguatemi", tickers: ["IGTI3", "IGTI4", "IGTI11"] },
+            { name: "IRB Brasil RE", tickers: ["IRBR3"] },
+            { name: "Ser Educacional", tickers: ["SEER3"] },
+            { name: "Energisa", tickers: ["ENGI3", "ENGI4", "ENGI11"] },
+            { name: "Intelbras", tickers: ["INTB3"] },
+            { name: "Porto Seguro", tickers: ["PSSA3"] },
+            { name: "Guararapes", tickers: ["GUAR3"] },
+            { name: "AZT Energia", tickers: ["AZTE3"] },
+            { name: "Zamp", tickers: ["ZAMP3"] },
+            { name: "Sabesp", tickers: ["SBSP3"] },
+            { name: "Even", tickers: ["EVEN3"] },
+            { name: "Positivo", tickers: ["POSI3"] },
+            { name: "Neoenergia", tickers: ["NEOE3"] },
+            { name: "Pague Menos", tickers: ["PGMN3"] },
+            { name: "Paranapanema", tickers: ["PMAM3"] },
+            { name: "Dexco", tickers: ["DXCO3"] },
+            { name: "Portobello", tickers: ["PTBL3"] },
+            { name: "Camil Alimentos", tickers: ["CAML3"] },
+            { name: "Americanas", tickers: ["AMER3"] },
+            { name: "Sanepar", tickers: ["SAPR3", "SAPR4", "SAPR11"] },
+            { name: "M. Dias Branco", tickers: ["MDIA3"] },
+            { name: "Cruzeiro do Sul Educacional", tickers: ["CSED3"] },
+            { name: "Ferbasa", tickers: ["FESA3", "FESA4"] },
+            { name: "Mills", tickers: ["MILS3"] },
+            { name: "Helbor", tickers: ["HBOR3"] },
+            { name: "Melnick", tickers: ["MELK3"] },
+            { name: "CPFL Energia", tickers: ["CPFE3"] },
+            { name: "Kepler Weber", tickers: ["KEPL3"] },
+            { name: "Moura Dubeux", tickers: ["MDNE3"] },
+            { name: "Lopes", tickers: ["LPSB3"] },
+            { name: "Boa Safra Sementes", tickers: ["SOJA3"] },
+            { name: "Trisul", tickers: ["TRIS3"] },
+            { name: "Alupar", tickers: ["ALUP3", "ALUP4", "ALUP11"] },
+            { name: "Tupy", tickers: ["TUPY3"] },
+            { name: "PDG Realty", tickers: ["PDGR3"] },
+            { name: "Plano&Plano", tickers: ["PLPL3"] },
+            { name: "Banco BMG", tickers: ["BMGB4"] },
+            { name: "Schulz", tickers: ["SHUL4"] },
+            { name: "SYN", tickers: ["SYNE3"] },
+            { name: "Irani", tickers: ["RANI3"] },
+            { name: "Iochpe-Maxion", tickers: ["MYPK3"] },
+            { name: "Mitre Realty", tickers: ["MTRE3"] },
+            { name: "IMC Alimentação", tickers: ["MEAL3"] },
+            { name: "Vulcabras", tickers: ["VULC3"] },
+            { name: "Lavvi Incorporadora", tickers: ["LAVV3"] },
+            { name: "Track & Field", tickers: ["TFCO4"] },
+            { name: "Armac", tickers: ["ARML3"] },
+            { name: "Dasa", tickers: ["DASA3"] },
+            { name: "Orizon", tickers: ["ORVR3"] },
+            { name: "JSL", tickers: ["JSLG3"] },
+            { name: "Light", tickers: ["LIGT3"] },
+            { name: "Lojas Marisa", tickers: ["AMAR3", "AMAR11"] },
+            { name: "Dimed", tickers: ["PNVL3"] },
+            { name: "Mobly", tickers: ["MBLY3"] },
+            { name: "Time For Fun", tickers: ["SHOW3"] },
+            { name: "Wilson Sons", tickers: ["PORT3"] },
+            { name: "Sequoia Logística", tickers: ["SEQL3"] },
+            { name: "Banco ABC Brasil", tickers: ["ABCB4"] },
+            { name: "Inepar", tickers: ["INEP3", "INEP4"] },
+            { name: "Wiz Soluções", tickers: ["WIZC3"] },
+            { name: "Vittia", tickers: ["VITT3"] },
+            { name: "LOG CP", tickers: ["LOGG3"] },
+            { name: "OceanPact", tickers: ["OPCT3"] },
+            { name: "Blau Farmacêutica", tickers: ["BLAU3"] },
+            { name: "Valid", tickers: ["VLID3"] },
+            { name: "Aeris Energy", tickers: ["AERI3"] },
+            { name: "Profarma", tickers: ["PFRM3"] },
+            { name: "Banco Pine", tickers: ["PINE3", "PINE11"] },
+            { name: "Fras-le", tickers: ["FRAS3"] },
+            { name: "Jalles Machado", tickers: ["JALL3"] },
+            { name: "Unifique", tickers: ["FIQE3"] },
+            { name: "Mahle Metal Leve", tickers: ["LEVE3"] },
+            { name: "Tegma", tickers: ["TGMA3"] },
+            { name: "Mater Dei", tickers: ["MATD3"] },
+            { name: "Taurus", tickers: ["TASA3", "TASA4"] },
+            { name: "Unipar", tickers: ["UNIP3", "UNIP5", "UNIP6"] },
+            { name: "Technos", tickers: ["TECN3"] },
+            { name: "BrasilAgro", tickers: ["AGRO3"] },
+            { name: "BR Partners", tickers: ["BRBI11"] },
+            { name: "Dexxos", tickers: ["DEXP3", "DEXP4"] },
+            { name: "Desktop", tickers: ["DESK3"] },
+            { name: "Neogrid", tickers: ["NGRD3"] },
+            { name: "Priner", tickers: ["PRNR3"] },
+            { name: "Bemobi", tickers: ["BMOB3"] },
+            { name: "HBR Realty", tickers: ["HBRE3"] },
+            { name: "Brisanet", tickers: ["BRST3"] },
+            { name: "Renova Energia", tickers: ["RNEW3", "RNEW4", "RNEW11"] },
+            { name: "Indústrias ROMI", tickers: ["ROMI3"] },
+            { name: "Traders Club", tickers: ["TRAD3"] },
+            { name: "Estapar", tickers: ["ALPK3"] },
+            { name: "D1000 Varejo Farma", tickers: ["DMVF3"] },
+            { name: "Eucatex", tickers: ["EUCA3", "EUCA4"] },
+            { name: "LE LIS BLANC", tickers: ["VSTE3"] },
+            { name: "Rossi Residencial", tickers: ["RSID3"] },
+            { name: "Eternit", tickers: ["ETER3"] },
+            { name: "Lupatech", tickers: ["LUPA3"] },
+            { name: "Cambuci", tickers: ["CAMB3"] },
+            { name: "Hotéis Othon", tickers: ["HOOT4"] },
+            { name: "Coelce", tickers: ["COCE3", "COCE5"] },
+            { name: "Ambipar", tickers: ["AMBP3"] },
+            { name: "Viver", tickers: ["VIVR3"] },
+            { name: "Terra Santa", tickers: ["LAND3"] },
+            { name: "Dotz", tickers: ["DOTZ3"] },
+            { name: "Fictor Alimentos", tickers: ["FICT3"] },
+            { name: "Biomm", tickers: ["BIOM3"] },
+            { name: "Padtec", tickers: ["PDTC3"] },
+            { name: "Allied", tickers: ["ALLD3"] },
+            { name: "Pettenati", tickers: ["PTNT3", "PTNT4"] },
+            { name: "Tecnisa", tickers: ["TCSA3"] },
+            { name: "WDC Networks", tickers: ["LVTC3"] },
+            { name: "Mangels", tickers: ["MGEL4"] },
+            { name: "Banco Mercantil do Brasil", tickers: ["BMEB3", "BMEB4"] },
+            { name: "Refinaria de Manguinhos", tickers: ["RPMG3"] },
+            { name: "Banestes", tickers: ["BEES3", "BEES4"] },
+            { name: "Unicasa", tickers: ["UCAS3"] },
+            { name: "João Fortes", tickers: ["JFEN3"] },
+            { name: "AgroGalaxy", tickers: ["AGXY3"] },
+            { name: "São Carlos", tickers: ["SCAR3"] },
+            { name: "RNI", tickers: ["RDNI3"] },
+            { name: "Alliança", tickers: ["AALR3"] },
+            { name: "CSU Cardsystem", tickers: ["CSUD3"] },
+            { name: "Whirlpool", tickers: ["WHRL3", "WHRL4"] },
+            { name: "Electro Aço Altona", tickers: ["EALT3", "EALT4"] },
+            { name: "Mundial", tickers: ["MNDL3"] },
+            { name: "Triunfo", tickers: ["TPIS3"] },
+            { name: "Log-In", tickers: ["LOGN3"] },
+            { name: "Grazziotin", tickers: ["CGRA3", "CGRA4"] },
+            { name: "Fertilizantes Heringer", tickers: ["FHER3"] },
+            { name: "Nutriplant", tickers: ["NUTR3"] },
+            { name: "CEB", tickers: ["CEBR3", "CEBR5", "CEBR6"] },
+            { name: "Eletromidia", tickers: ["ELMD3"] },
+            { name: "Equatorial Energia Pará", tickers: ["EQPA3"] },
+            { name: "Embpar Participações", tickers: ["EPAR3"] },
+            { name: "EMAE", tickers: ["EMAE4"] },
+            { name: "Celesc", tickers: ["CLSC3", "CLSC4"] },
+            { name: "Telebras", tickers: ["TELB3", "TELB4"] },
+            { name: "Banco de Brasília", tickers: ["BSLI3", "BSLI4"] },
+            { name: "Atma", tickers: ["ATMP3"] },
+            { name: "Sansuy", tickers: ["SNSY3", "SNSY5"] },
+            { name: "Minupar", tickers: ["MNPR3"] },
+            { name: "Rede Energia", tickers: ["REDE3"] },
+            { name: "Santanense", tickers: ["CTSA3", "CTSA4"] },
+            { name: "Metalúrgica Riosulense", tickers: ["RSUL4"] },
+            { name: "Westwing", tickers: ["WEST3"] },
+            { name: "Haga", tickers: ["HAGA3", "HAGA4"] },
+            { name: "Tronox Pigmentos", tickers: ["CRPG5", "CRPG6"] },
+            { name: "Banese", tickers: ["BGIP3", "BGIP4"] },
+            { name: "OSX Brasil", tickers: ["OSXB3"] },
+            { name: "Ourofino Saúde Animal", tickers: ["OFSA3"] },
+            { name: "Dtcom", tickers: ["DTCY3"] },
+            { name: "Metisa", tickers: ["MTSA4"] },
+            { name: "Banco da Amazônia", tickers: ["BAZA3"] },
+            { name: "WLM", tickers: ["WLMM4"] },
+            { name: "Baumer", tickers: ["BALM3", "BALM4"] },
+            { name: "Döhler", tickers: ["DOHL4"] },
+            { name: "Cedro Têxtil", tickers: ["CEDO4"] },
+            { name: "Fica", tickers: ["FIEI3"] },
+            { name: "Karsten", tickers: ["CTKA3", "CTKA4"] },
+            { name: "Panatlântica", tickers: ["PATI3", "PATI4"] },
+            { name: "CEEE D", tickers: ["CEED3"] },
+            { name: "Plascar", tickers: ["PLAS3"] },
+            { name: "Estrela", tickers: ["ESTR4"] },
+            { name: "Brasil Brokers", tickers: ["NEXP3"] },
+            { name: "Alphaville", tickers: ["AVLL3"] },
+            { name: "Elektro", tickers: ["EKTR3", "EKTR4"] },
+            { name: "COELBA", tickers: ["CEEB3"] },
+            { name: "PPLA", tickers: ["PPLA11"] },
+            { name: "Monteiro Aranha", tickers: ["MOAR3"] },
+            { name: "Comgás", tickers: ["CGAS3", "CGAS5"] },
+            { name: "Excelsior", tickers: ["BAUH4"] },
+            { name: "Participações Aliança da Bahia", tickers: ["PEAB3", "PEAB4"] },
+            { name: "MRS Logística", tickers: ["MRSA3B", "MRSA5B", "MRSA6B"] },
+            { name: "Afluente T", tickers: ["AFLT3"] },
+            { name: "Banco do Nordeste", tickers: ["BNBR3"] },
+            { name: "São Paulo Turismo", tickers: ["AHEB3", "AHEB6"] },
+            { name: "Rio Paranapanema Energia", tickers: ["GEPA3", "GEPA4"] },
+            { name: "Banco Mercantil de Investimentos", tickers: ["BMIN3", "BMIN4"] },
+            { name: "Bardella", tickers: ["BDLL3", "BDLL4"] },
+            { name: "Hercules", tickers: ["HETA4"] },
+            { name: "Cemepe", tickers: ["MAPT3", "MAPT4"] },
+            { name: "Monark", tickers: ["BMKS3"] },
+            { name: "Metalfrio", tickers: ["FRIO3"] },
+            { name: "Habitasul", tickers: ["HBTS5"] },
+            { name: "Wetzel", tickers: ["MWET4"] },
+            { name: "Equatorial Maranhão", tickers: ["EQMA3B"] },
+            { name: "Nordon", tickers: ["NORD3"] },
+            { name: "Trevisa", tickers: ["LUXM4"] },
+            { name: "General Shopping & Outlets", tickers: ["GSHP3"] },
+            { name: "Alfa Holdings", tickers: ["RPAD5"] },
+            { name: "Energisa MT", tickers: ["ENMT3"] },
+            { name: "Tekno", tickers: ["TKNO4"] },
+            { name: "Sondotécnica", tickers: ["SOND5"] },
+            { name: "Eletropar", tickers: ["LIPR3"] },
+            { name: "PORTO VM", tickers: ["PSVM11"] },
+            { name: "Mercantil do Brasil Financeira", tickers: ["MERC4"] },
+            { name: "Josapar", tickers: ["JOPA3"] },
+            { name: "Atom Educação", tickers: ["ATED3"] },
+            { name: "Serena Energia", tickers: ["SRNA3"] },
+            { name: "Grupo Vamos", tickers: ["VAMO3"] },
+            { name: "Infracommerce", tickers: ["IFCM3"] },
+            { name: "VITRUBREPCOM", tickers: ["VTRU3"] }
+        ];
+
+        let selectedTicker = '';
+        
+        function setupSearch() {
+            const searchInput = document.getElementById('empresaSearch');
+            const searchResults = document.getElementById('searchResults');
+            const hiddenInput = document.getElementById('nomeEmpresa');
+            
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query.length < 2) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+                
+                const filteredEmpresas = empresasB3.filter(empresa => 
+                    empresa.name.toLowerCase().includes(query) ||
+                    empresa.tickers.some(ticker => ticker.toLowerCase().includes(query))
+                );
+                
+                displaySearchResults(filteredEmpresas);
+            });
+            
+            // Fechar resultados ao clicar fora
+            document.addEventListener('click', function(e) {
+                if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.style.display = 'none';
+                }
+            });
+        }
+        
+        function displaySearchResults(empresas) {
+            const searchResults = document.getElementById('searchResults');
+            
+            if (empresas.length === 0) {
+                searchResults.innerHTML = '<div class="no-results">Nenhuma empresa encontrada</div>';
+                searchResults.style.display = 'block';
+                return;
+            }
+            
+            const resultsHTML = empresas.map(empresa => `
+                <div class="search-result-item">
+                    <span class="company-name">${empresa.name}</span>
+                    <div class="company-tickers">
+                        ${empresa.tickers.map(ticker => 
+                            `<span class="ticker-badge" onclick="selectTicker('${ticker}', '${empresa.name}')">${ticker}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `).join('');
+            
+            searchResults.innerHTML = resultsHTML;
+            searchResults.style.display = 'block';
+        }
+        
+        function selectTicker(ticker, companyName) {
+            selectedTicker = ticker;
+            
+            // Atualizar campos
+            document.getElementById('nomeEmpresa').value = ticker;
+            document.getElementById('empresaSearch').value = `${companyName} (${ticker})`;
+            
+            // Mostrar seleção
+            document.getElementById('selectedCompanyName').textContent = `${companyName} (${ticker})`;
+            document.getElementById('selectedCompany').style.display = 'flex';
+            
+            // Esconder resultados
+            document.getElementById('searchResults').style.display = 'none';
+        }
+        
+        function clearSelection() {
+            selectedTicker = '';
+            document.getElementById('nomeEmpresa').value = '';
+            document.getElementById('empresaSearch').value = '';
+            document.getElementById('selectedCompany').style.display = 'none';
+        }
+        
+        document.getElementById('empresaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!selectedTicker) {
+                showResult('error', 'Por favor, selecione uma empresa da lista.');
+                return;
+            }
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            
+            // Mostrar loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processando...';
+            loading.style.display = 'flex';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch(N8N_WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        empresa: selectedTicker, // Envia apenas o ticker
+                        timestamp: new Date().toISOString(),
+                        source: 'web_form'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    showResult('success', `✅ Pesquisa iniciada com sucesso para "${selectedTicker}"! 
+                        <br><br>📄 Documento sendo gerado...
+                        <br>🔗 <strong>Link do Google Docs:</strong> <a href="${data.documentUrl || '#'}" target="_blank" style="color: #155724; text-decoration: underline;">Clique aqui quando pronto</a>
+                        <br><br>⏱️ Tempo estimado: 2-3 minutos`);
+                } else {
+                    throw new Error(`Erro HTTP: ${response.status}`);
+                }
+                
+            } catch (error) {
+                console.error('Erro:', error);
+                showResult('error', `❌ Erro ao processar a solicitação: ${error.message}
+                    <br><br>🔧 Verifique se o webhook n8n está configurado corretamente.`);
+            } finally {
+                // Esconder loading
+                submitBtn.disabled = false;
+                submitBtn.textContent = '🔍 Iniciar Pesquisa';
+                loading.style.display = 'none';
+            }
+        });
+        
+        function showResult(type, message) {
+            const result = document.getElementById('result');
+            result.className = `result ${type}`;
+            result.innerHTML = message;
+            result.style.display = 'block';
+        }
+        
+        // Inicializar busca quando a página carregar
+        document.addEventListener('DOMContentLoaded', setupSearch);
+    </script>
+</body>
+</html>
