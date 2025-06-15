@@ -16,7 +16,7 @@
 - ✅ Conta Google Cloud Platform (gratuita)
 - ✅ Conta n8n Cloud ou instância self-hosted
 - ✅ Conta BRAPI (gratuita)
-- ⚪ Conta NewsAPI (gratuita)
+- ✅ Conta NewsAPI (gratuita)
 
 ### Conhecimentos Técnicos
 - Básico em JSON e APIs REST
@@ -163,6 +163,24 @@ https://[SEU_DOMINIO]/rest/oauth2-credential/callback
 curl "https://brapi.dev/api/quote/PETR4?token=[SEU_TOKEN_BRAPI]"
 ```
 
+**Exemplo de resposta esperada:**
+```json
+{
+  "results": [
+    {
+      "symbol": "PETR4",
+      "shortName": "PETROBRAS   PN      N2",
+      "longName": "Petróleo Brasileiro S.A. - Petrobras",
+      "currency": "BRL",
+      "regularMarketPrice": 32.53,
+      "regularMarketDayHigh": 32.89,
+      "regularMarketDayLow": 32.21,
+      "regularMarketVolume": 74819900
+    }
+  ]
+}
+```
+
 ### 2. NewsAPI
 
 #### 2.1 Registrar no NewsAPI
@@ -173,6 +191,24 @@ curl "https://brapi.dev/api/quote/PETR4?token=[SEU_TOKEN_BRAPI]"
 #### 2.2 Testar API
 ```bash
 curl "https://newsapi.org/v2/everything?q=Petrobras&language=pt&apiKey=[SUA_CHAVE_NEWSAPI]"
+```
+
+**Exemplo de resposta esperada:**
+```json
+{
+  "status": "ok",
+  "totalResults": 157,
+  "articles": [
+    {
+      "source": {"id": null, "name": "InfoMoney"},
+      "author": "InfoMoney",
+      "title": "Petrobras anuncia dividendos de R$ 1,2 bi",
+      "description": "Companhia aprova distribuição...",
+      "url": "https://www.infomoney.com.br/...",
+      "publishedAt": "2024-12-15T14:30:00Z"
+    }
+  ]
+}
 ```
 
 ### 3. Gemini AI
@@ -189,6 +225,16 @@ curl -X POST \
   }'
 ```
 
+### 4. Limites e Quotas das APIs
+
+| API | Limite Gratuito | Limite Pago | Observações |
+|-----|-----------------|-------------|-------------|
+| **BRAPI** | 10.000 req/mês | Ilimitado | Sem limite de RPM |
+| **NewsAPI** | 1.000 req/dia | Gretuito ate 1000 req | 100 artigos por request |
+| **Gemini AI** | 15 req/min | 1.000 req/min | Rate limit por minuto |
+| **Google Drive** | Gratuito | Gratuito | Limitado por storage |
+| **Google Docs** | Gratuito | Gratuito | 100 requests/100s/user |
+
 ## 🌐 Deploy Frontend
 
 ### 1. Configurar Frontend
@@ -196,7 +242,7 @@ curl -X POST \
 1. Abra `frontend/index.html`
 2. Localize a linha:
    ```javascript
-   const N8N_WEBHOOK_URL = 'https://rafaelsr44.app.n8n.cloud/webhook-test/empresa-research';
+   const N8N_WEBHOOK_URL = 'https://rafaelsr44.app.n8n.cloud/webhook/empresa-research';
    ```
 3. Substitua pela sua URL do webhook n8n
 
@@ -232,10 +278,12 @@ curl -X POST "https://[SUA_INSTANCIA].app.n8n.cloud/webhook/empresa-research" \
   -d '{"empresa":"PETR4","timestamp":"2024-01-01T00:00:00Z"}'
 ```
 
-#### 1.2 Verificar Google Drive
-1. Acesse sua pasta no Google Drive
-2. Deve aparecer uma subpasta com nome da empresa
-3. Dentro deve ter um documento Google Docs
+#### 1.2 Verificar Fluxo Completo
+1. **BRAPI**: Dados de cotação coletados ✅
+2. **NewsAPI**: Notícias coletadas ✅  
+3. **Gemini**: Análise gerada ✅
+4. **Google Drive**: Pasta criada ✅
+5. **Google Docs**: Documento gerado ✅
 
 #### 1.3 Testar Frontend
 1. Abra o frontend no navegador
@@ -257,11 +305,55 @@ curl -X POST "https://[SUA_INSTANCIA].app.n8n.cloud/webhook/empresa-research" \
 ### 3. Validar Conteúdo Gerado
 
 O documento deve conter:
-- ✅ Resumo executivo com ticker e setor
-- ✅ Dados financeiros (preço, P/L, etc.)
-- ✅ Notícias recentes
-- ✅ Análise técnica
-- ✅ Outlook e perspectivas
+- ✅ **Análise Empresarial** com ticker e data
+- ✅ **Perfil Corporativo** da empresa
+- ✅ **Resumo Financeiro** com dados do BRAPI
+- ✅ **Análise de Performance** interpretativa
+- ✅ **Notícias Mais Relevantes** (3 principais)
+- ✅ **Análise Integrada** combinando dados
+- ✅ **Disclaimers** e informações legais
+
+### 4. Exemplo de Documento Gerado
+
+```markdown
+# 📊 ANÁLISE EMPRESARIAL - Petróleo Brasileiro S.A. - Petrobras (PETR4)
+
+**Data da Análise:** 15/06/2025 14:30
+**Ticker:** PETR4
+**Razão Social:** Petróleo Brasileiro S.A. - Petrobras
+
+---
+
+## 🏢 PERFIL CORPORATIVO
+
+**Fundação:** 1953
+**Sede:** Rio de Janeiro, RJ
+**Principais Atividades:** Exploração, produção, refino e comercialização de petróleo
+**Posicionamento:** Maior empresa brasileira de energia
+**Modelo de Negócio:** Integração vertical na cadeia de petróleo e gás
+
+---
+
+## 💰 RESUMO FINANCEIRO
+
+**Preço Atual:** R$ 32,53
+**Variação Diária:** +2,46% (+0,78)
+**Abertura:** R$ 31,75
+**Máxima do Dia:** R$ 32,89
+**Mínima do Dia:** R$ 32,21
+**Volume:** 74,8 milhões
+
+---
+
+## 📰 NOTÍCIAS MAIS RELEVANTES
+
+### 🔥 Notícia 1: Petrobras anuncia dividendos de R$ 1,2 bilhão
+**Data:** 15/06/2025
+**Resumo:** Companhia aprova distribuição extraordinária aos acionistas
+**Impacto:** Positivo para investidores, sinaliza geração de caixa forte
+
+[... resto da análise ...]
+```
 
 ## 🔍 Troubleshooting
 
@@ -299,7 +391,25 @@ Erro: Resource has been exhausted
 - Aguardar reset do quota (1 minuto)
 - Verificar limites da API key
 
-#### 5. Documento não criado
+#### 5. BRAPI retorna erro 401
+```
+Erro: Unauthorized
+```
+**Solução**:
+- Verificar se token BRAPI está correto
+- Confirmar se token não expirou
+- Testar token diretamente na API
+
+#### 6. NewsAPI sem resultados
+```
+Erro: No articles found
+```
+**Solução**:
+- Verificar se há notícias em português sobre a empresa
+- Tentar com ticker alternativo (PETR3 vs PETR4)
+- Confirmar quota diária não excedida
+
+#### 7. Documento não criado
 **Verificar**:
 - Credenciais Google Drive configuradas
 - Permissões da pasta
@@ -310,25 +420,41 @@ Erro: Resource has been exhausted
 #### n8n Workflow
 1. No n8n, clique no workflow
 2. Vá para "Executions"
-3. Analise logs de erro
+3. Analise logs de erro detalhadamente
 
-#### Gemini API
+#### Monitoramento de APIs
 ```bash
-# Testar quota
+# Verificar status BRAPI
+curl "https://brapi.dev/api/available?token=[SEU_TOKEN]"
+
+# Verificar quota NewsAPI
+curl "https://newsapi.org/v2/top-headlines?country=br&apiKey=[SUA_CHAVE]"
+
+# Testar Gemini
 curl "https://generativelanguage.googleapis.com/v1beta/models?key=[SUA_CHAVE]"
 ```
 
-#### BRAPI
-```bash
-# Verificar status
-curl "https://brapi.dev/api/available?token=[SEU_TOKEN]"
-```
+### Performance e Otimização
+
+#### Tempos Esperados
+- **BRAPI Request**: 1-2 segundos
+- **NewsAPI Request**: 2-4 segundos  
+- **Gemini Processing**: 10-30 segundos
+- **Google Docs Creation**: 3-5 segundos
+- **Total Workflow**: 60-120 segundos
+
+#### Otimizações Recomendadas
+1. **Cache de cotações**: Evitar múltiplas consultas da mesma empresa
+2. **Filtro de notícias**: Pré-filtrar notícias relevantes
+3. **Prompt otimizado**: Reduzir tamanho do prompt Gemini
+4. **Rate limiting**: Implementar throttling para APIs
 
 ### Contatos de Suporte
 
 - **n8n Community**: [community.n8n.io](https://community.n8n.io)
 - **Google Cloud Support**: [cloud.google.com/support](https://cloud.google.com/support)
 - **BRAPI Discord**: [discord.gg/T5kEGME](https://discord.gg/T5kEGME)
+- **NewsAPI Support**: [newsapi.org/contact](https://newsapi.org/contact)
 
 ---
 
@@ -337,16 +463,18 @@ curl "https://brapi.dev/api/available?token=[SEU_TOKEN]"
 Após implementação bem-sucedida:
 
 1. 📊 Configure monitoramento de execuções
-2. 🔄 Teste com diferentes empresas
+2. 🔄 Teste com diferentes empresas B3
 3. 📈 Monitore uso das APIs
 4. 🚀 Considere upgrade para contas pagas se necessário
 5. 🔧 Customize análises conforme necessidade
+6. 📱 Considere implementar notificações via Slack/Teams
+7. 🗄️ Implemente backup automático dos documentos gerados
 
 ---
 
 <div align="center">
 
-**Implementação concluída com sucesso!** ✅  
-Prossiga para o [Setup do Workflow n8n](n8n-workflow-setup.md)
+**Implementação completa configurada com sucesso!** ✅  
+Sistema agora integra BRAPI, NewsAPI e Gemini AI para análises profissionais
 
 </div>

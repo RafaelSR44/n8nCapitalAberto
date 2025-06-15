@@ -90,22 +90,65 @@ Response Mode: "Response Node"
 
 **Importante**: Após salvar, copie a URL do webhook gerada
 
-### 2. Google Drive (Criar Pasta)
+### 2. Edit Fields (Processamento Inicial)
 
 ```yaml
-Nome: "Google Drive"
-Operation: "Create Folder"
-Drive ID: "My Drive"
-Parent Folder ID: "[ID_DA_SUA_PASTA_PAI]"
-Folder Name: "={{ $('Edit Fields').item.json['\"empresa\"'] }}"
+Nome: "Edit Fields"
+Assignments:
+  - Name: "empresa"
+    Value: "={{ $json.body.empresa }}"
+  - Name: "timestamp"  
+    Value: "={{ $json.body.timestamp }}"
+  - Name: "documentTitle"
+    Value: "=Análise - {{ $json.body.empresa }} - {{ $now.format('DD HH:mm') }}"
 ```
 
-**Como obter ID da pasta pai**:
-1. Acesse Google Drive
-2. Navegue até a pasta desejada
-3. Copie ID da URL: `https://drive.google.com/drive/folders/ID_AQUI`
+### 3. BRAPI-QUOTE (Cotações B3)
 
-### 3. HTTP Request (Gemini AI)
+```yaml
+Nome: "BRAPI-QUOTE"
+Method: "GET"
+URL: "https://brapi.dev/api/quote/{{ $('Edit Fields').item.json['\"empresa\"'] }}"
+Query Parameters:
+  token: "[SEU_TOKEN_BRAPI]"
+```
+
+### 4. NEWSAPI-NEWS (Notícias)
+
+```yaml
+Nome: "NEWSAPI-NEWS"
+Method: "GET"
+URL: "https://newsapi.org/v2/everything"
+Query Parameters:
+  q: "={{ $('Edit Fields').item.json['\"empresa\"'] }}"
+  language: "pt"
+  sortBy: "publishedAt"
+  apiKey: "[SUA_CHAVE_NEWSAPI]"
+```
+
+### 5. Edit Fields3 (Formatação de Dados)
+
+```yaml
+Nome: "Edit Fields3"
+Assignments:
+  - Name: "formatacaoNews"
+    Value: "={{ $json.articles }}"
+  - Name: "formatacaoQuote"
+    Value: "={{ $('BRAPI-QUOTE').item.json.results }}"
+```
+
+### 6. Edit Fields2 (Prompt Gemini)
+
+```yaml
+Nome: "Edit Fields2"
+Assignments:
+  - Name: "contents"
+    Value: [PROMPT_COMPLEXO_PARA_GEMINI]
+  - Name: "generationConfig"
+    Value: [CONFIGURAÇÕES_GEMINI]
+```
+
+### 7. HTTP Request (Gemini AI)
 
 ```yaml
 Nome: "HTTP Request"
@@ -113,41 +156,68 @@ Method: "POST"
 URL: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=[SUA_CHAVE_GEMINI]"
 Headers:
   Content-Type: "application/json"
-Body: "JSON Object"
+Body Parameters:
+  contents: "={{ $('Edit Fields2').item.json.contents }}"
+  generationConfig: "={{ $('Edit Fields2').item.json.generationConfig[0] }}"
 ```
 
-**Substituir chave**:
-- Localize `[SUA_CHAVE_GEMINI]`
-- Substitua por `[SUA_CHAVE_GEMINI]`
-
-### 4. BRAPI Quote 
+### 8. Edit Fields1 (Processamento da Análise)
 
 ```yaml
-Nome: "BRAPI-QUOTE"
-Method: "GET"
-URL: "https://brapi.dev/api/quote/{{ $json['\"empresa\"'] }}"
-Query Parameters:
-  token: "[SEU_TOKEN_BRAPI]"
+Nome: "Edit Fields1"
+Assignments:
+  - Name: "geminiAnalysis"
+    Value: "={{ $json.candidates[0].content.parts[0].text }}"
+  - Name: "empresa"
+    Value: "={{ $('Edit Fields').item.json.empresa }}"
+  - Name: "documentTitle"
+    Value: "={{ $('Edit Fields').item.json.documentTitle }}"
 ```
 
-### 5. NewsAPI 
+### 9. Google Drive (Criar Pasta)
 
 ```yaml
-Nome: "NEWSAPI-NEWS"
-Method: "GET"
-URL: "https://newsapi.org/v2/everything"
-Query Parameters:
-  q: "{{ $json['\"empresa\"'] }}"
-  language: "pt"
-  sortBy: "publishedAt"
-  apiKey: "[SUA_CHAVE_NEWSAPI]"
+Nome: "Google Drive"
+Operation: "Create Folder"
+Drive ID: "My Drive"
+Parent Folder ID: "1H2kob3X-wW5IUp2C11yngi4_zplU6hT-"
+Folder Name: "={{ $('Edit Fields').item.json['\"empresa\"'] }}"
+```
+
+### 10. Google Docs (Criar Documento)
+
+```yaml
+Nome: "Google Docs"
+Operation: "Create Document"
+Drive ID: "myDrive"
+Folder ID: "={{ $json.id }}"
+Title: "={{ $('Edit Fields').item.json['\"documentTitle\"'] }}"
+```
+
+### 11. Google Docs1 (Atualizar Documento)
+
+```yaml
+Nome: "Google Docs1"
+Operation: "Update"
+Document URL: "={{ $json.id }}"
+Actions:
+  - Action: "Insert"
+    Text: "={{ $('Edit Fields1').item.json.geminiAnalysis }}"
+```
+
+### 12. Respond to Webhook (Resposta)
+
+```yaml
+Nome: "Respond to Webhook"
+Respond With: "JSON"
+Response Body: [JSON_DE_RESPOSTA_ESTRUTURADO]
 ```
 
 ## 📄 JSON Completo do Workflow
 
 ```json
 {
-  "name": "Investment Banking - Empresa Research",
+  "name": "My workflow",
   "nodes": [
     {
       "parameters": {
@@ -159,20 +229,20 @@ Query Parameters:
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [0, 0],
-      "id": "webhook-start",
+      "id": "86ea7ff9-442a-45b2-945d-a294dff9b68f",
       "name": "Webhook",
-      "webhookId": "empresa-research-webhook"
+      "webhookId": "d36b7798-9570-4cce-aaf6-696bd0716133"
     },
     {
       "parameters": {
         "respondWith": "json",
-        "responseBody": "={\n        \"success\": true,\n        \"message\": \"Análise iniciada com sucesso\",\n        \"empresa\": \"={{ $('Edit Fields').item.json['empresa'] }}\",\n        \"documentUrl\": \"https://docs.google.com/document/d/{{ $('Google Docs').item.json.id }}/edit\",\n        \"documentId\": \"={{ $('Google Docs').item.json.id }}\",\n        \"timestamp\": \"={{ $('Edit Fields').item.json['timestamp'] }}\"\n      }",
+        "responseBody": "={\n        \"success\": true,\n        \"message\": \"Análise iniciada com sucesso\",\n        \"empresa\": \"={{ $('Edit Fields').item.json['\"empresa\"'] }}\",\n        \"documentUrl\": \"https://docs.google.com/document/d/{{ $('Google Docs').item.json.id }}/edit\",\n        \"documentId\": \"={{ $('Google Docs').item.json.id }}\",\n        \"timestamp\": \"={{ $('Edit Fields').item.json['\"timestamp\"'] }}\"\n      }",
         "options": {}
       },
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,
-      "position": [1540, 0],
-      "id": "respond-webhook",
+      "position": [2040, 0],
+      "id": "ff9b5364-13ae-46b1-aec8-f505fe8ee57e",
       "name": "Respond to Webhook"
     },
     {
@@ -180,21 +250,21 @@ Query Parameters:
         "assignments": {
           "assignments": [
             {
-              "id": "empresa-assignment",
-              "name": "empresa",
+              "id": "31c0b619-a3a5-4178-93af-b3611c5dbf51",
+              "name": "\"empresa\"",
               "value": "={{ $json.body.empresa }}",
               "type": "string"
             },
             {
-              "id": "timestamp-assignment",
-              "name": "timestamp",
+              "id": "9eb60aab-fdbb-48e8-8946-a065086011f1",
+              "name": "\"timestamp\"",
               "value": "={{ $json.body.timestamp }}",
               "type": "string"
             },
             {
-              "id": "document-title-assignment",
-              "name": "documentTitle",
-              "value": "=Análise - {{ $json.body.empresa }} - {{ $now.format('DD/MM HH:mm') }}",
+              "id": "7c500e36-9cd0-43ab-bea6-71a09c12692c",
+              "name": "\"documentTitle\"",
+              "value": "=Análise -  {{ $json.body.empresa }} - {{ $now.format('DD HH:mm') }}",
               "type": "string"
             }
           ]
@@ -204,7 +274,7 @@ Query Parameters:
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [220, 0],
-      "id": "edit-fields",
+      "id": "98a2be06-f408-4c5d-9f7f-77bae149bae4",
       "name": "Edit Fields"
     },
     {
@@ -212,19 +282,19 @@ Query Parameters:
         "assignments": {
           "assignments": [
             {
-              "id": "gemini-analysis",
+              "id": "8f47ec9a-ea12-4960-8633-f358c73f7975",
               "name": "geminiAnalysis",
-              "value": "={{ $json.candidates[0].content.parts[0].text }}",
+              "value": "=={{ $json.candidates[0].content.parts[0].text }}",
               "type": "string"
             },
             {
-              "id": "empresa-field",
+              "id": "312d859b-3ff4-49e1-884e-13659a70d42b",
               "name": "empresa",
               "value": "={{ $('Edit Fields').item.json.empresa }}",
               "type": "string"
             },
             {
-              "id": "document-title-field",
+              "id": "ab0c82f3-e2ae-476f-98ad-e6725099b72a",
               "name": "documentTitle",
               "value": "={{ $('Edit Fields').item.json.documentTitle }}",
               "type": "string"
@@ -235,20 +305,20 @@ Query Parameters:
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [840, 0],
-      "id": "edit-fields-analysis",
-      "name": "Edit Fields - Analysis"
+      "position": [1340, 0],
+      "id": "9a5df26d-1e3c-44a6-b32f-8068c66b5059",
+      "name": "Edit Fields1"
     },
     {
       "parameters": {
-        "driveId": "myDrive",
+        "driveId": "=myDrive",
         "folderId": "={{ $json.id }}",
-        "title": "={{ $('Edit Fields').item.json['documentTitle'] }}"
+        "title": "={{ $('Edit Fields').item.json['\"documentTitle\"'] }}"
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [1180, 0],
-      "id": "google-docs-create",
+      "position": [1680, 0],
+      "id": "73687994-9507-4691-b164-897b794c29e8",
       "name": "Google Docs",
       "credentials": {
         "googleDocsOAuth2Api": {
@@ -265,16 +335,16 @@ Query Parameters:
           "actionFields": [
             {
               "action": "insert",
-              "text": "=# Análise de Empresa - {{ $('Edit Fields').item.json.empresa }}\\n\\n**Data da Análise:** {{ $now.format('DD/MM/YYYY HH:mm:ss') }}\\n**Gerado por:** Sistema Automatizado de Investment Banking\\n\\n---\\n\\n{{ $('Edit Fields - Analysis').item.json.geminiAnalysis }}\\n\\n---\\n\\n**Disclaimers:**\\n- Esta análise foi gerada automaticamente\\n- Os dados podem estar desatualizados\\n- Recomenda-se verificação manual para decisões de investimento\\n- Este documento é para fins informativos apenas\\n\\n*Powered by n8n + Gemini AI*"
+              "text": "={{ $('Edit Fields1').item.json.geminiAnalysis }}"
             }
           ]
         }
       },
       "type": "n8n-nodes-base.googleDocs",
       "typeVersion": 2,
-      "position": [1360, 0],
-      "id": "google-docs-update",
-      "name": "Google Docs - Update",
+      "position": [1860, 0],
+      "id": "788247b4-160d-4c6b-b913-389b9f01a955",
+      "name": "Google Docs1",
       "credentials": {
         "googleDocsOAuth2Api": {
           "id": "[SUBSTITUA_PELO_ID_DA_SUA_CREDENCIAL]",
@@ -288,17 +358,17 @@ Query Parameters:
         "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=[SUBSTITUA_PELA_SUA_CHAVE_GEMINI]",
         "sendHeaders": true,
         "specifyHeaders": "json",
-        "jsonHeaders": "{}",
+        "jsonHeaders": "{\n  \n}",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
             {
               "name": "contents",
-              "value": "={{ $json.contents }}"
+              "value": "={{ $('Edit Fields2').item.json.contents }}"
             },
             {
               "name": "generationConfig",
-              "value": "={{ $json.generationConfig[0] }}"
+              "value": "={{ $('Edit Fields2').item.json.generationConfig[0] }}"
             }
           ]
         },
@@ -306,23 +376,23 @@ Query Parameters:
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [660, 0],
-      "id": "http-request-gemini",
-      "name": "HTTP Request - Gemini"
+      "position": [1160, 0],
+      "id": "229e38ca-c925-4b57-a674-429628c67f53",
+      "name": "HTTP Request"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "contents-assignment",
+              "id": "74b68604-4064-412f-b208-2e0ffb25975b",
               "name": "contents",
-              "value": "={{   [         {           \"parts\": [             {               \"text\": \"Você é um analista sênior de Investment Banking especializado no mercado brasileiro de capitais. Preciso de uma análise profissional e detalhada sobre a empresa '\"+ $json['empresa']+ \"'.\\n\\n## INSTRUÇÕES ESPECÍFICAS:\\n- Foque APENAS em empresas brasileiras de capital aberto (listadas na B3)\\n- Use linguagem técnica apropriada para profissionais de IB\\n- Seja factual e preciso com dados financeiros\\n- Indique claramente quando informações estão desatualizadas\\n- Se a empresa não for brasileira/pública, informe imediatamente\\n\\n## ESTRUTURA OBRIGATÓRIA:\\n\\n### 📊 RESUMO EXECUTIVO\\n**Setor:** [Classificação setorial B3]\\n**Ticker:** [Código de negociação]\\n**Status:** [Ativo/Suspenso/etc]\\n**Market Cap:** [Se disponível]\\n\\n### 🏢 PERFIL CORPORATIVO\\n**Fundação:** [Ano e contexto]\\n**Sede:** [Localização]\\n**Principais Atividades:** [Core business detalhado]\\n**Posicionamento:** [Market share, ranking setorial]\\n**Modelo de Negócio:** [Revenue streams principais]\\n\\n### 📈 INDICADORES FINANCEIROS (Últimos dados disponíveis)\\n**Preço da Ação:** [Valor e data]\\n**Variação 52 semanas:** [Min/Max]\\n**Volume médio:** [Se disponível]\\n**P/L:** [Se aplicável]\\n**ROE:** [Se disponível]\\n**Dividend Yield:** [Se aplicável]\\n\\n### 📰 ÚLTIMAS NOTÍCIAS RELEVANTES (2-3 mais recentes)\\nPara cada notícia:\\n**[Data] - Título**\\n- Resumo: [2-3 linhas sobre impacto nos negócios]\\n- Relevância: [Alta/Média/Baixa para investidores]\\n- Fonte: [Se disponível]\\n\\n### 🎯 ANÁLISE TÉCNICA\\n**Pontos Fortes:**\\n- [3-4 pontos específicos]\\n\\n**Riscos Identificados:**\\n- [3-4 riscos setoriais/específicos]\\n\\n**Catalisadores Potenciais:**\\n- [Próximos eventos relevantes]\\n\\n### 🔮 OUTLOOK\\n**Perspectiva Trimestral:** [Próximo trimestre]\\n**Perspectiva Anual:** [12 meses]\\n**Consenso de Mercado:** [Se houver informação disponível]\\n\\n## AVISOS IMPORTANTES:\\n- Dados podem estar desatualizados\\n- Não constitui recomendação de investimento\\n- Verificar informações em fontes oficiais\\n- Para uso informativo apenas\\n\\n---\\n*Análise gerada por IA - Validação manual recomendada*\"             }           ]         }       ] }}",
+              "value": "={{   [         {           \"parts\": [             {               \"text\": \"Você é um analista sênior de Investment Banking especializado no mercado brasileiro de capitais.Você receberá dados, que devem ser analisados e tratados, sobre uma empresa brasileira listada na B3, incluindo:\\n1. **Dados Sobre a empresa** - Informações sobre a empresa\\n2. **Dados de Cotação** (formatacaoQuote) - Informações financeiras e de mercado\\n3. **Dados de Notícias** (formatacaoNews) - Notícias recentes sobre a empresa \\n---\\n\\n## DADOS RECEBIDOS:\\n ### 📊 INFORMAÇÕES DE COTAÇÃO:\\n '\"+ $json.formatacaoQuote + \"' \\n ### 📰 NOTÍCIAS COLETADAS: \\n '\"+ $json.formatacaoNews + \"'\\n\\n---\\n\\n## INSTRUÇÕES DE PROCESSAMENTO:\\n\\n### 🔍 Análise das Notícias:\\n1. Avalie TODAS as notícias fornecidas no array articles\\n2. Selecione as 3 MAIS RELEVANTES baseado nos critérios:\\n   - Impacto financeiro direto na empresa\\n   - Relevância operacional (resultados, projetos, mudanças estratégicas)\\n   - Atualidade (priorize notícias mais recentes)\\n   - Fonte confiável (InfoMoney, Valor, Reuters, etc.)\\n3. Descarte notícias sobre:\\n   - Mercado geral sem menção específica da empresa\\n   - Análises técnicas genéricas do Ibovespa\\n   - Notícias repetitivas ou similares\\n\\n### 📈 Análise da Cotação:\\n1. Extraia os dados mais relevantes do JSON de cotação\\n2. Calcule métricas importantes quando possível\\n3. Interprete os indicadores no contexto do mercado brasileiro\\n\\n---\\n\\n## ESTRUTURA OBRIGATÓRIA DO RELATÓRIO:\\n\\n# 📊 ANÁLISE EMPRESARIAL - {NOME_EMPRESA} ({TICKER})\\n\\n**Data da Análise:** {DATA_ATUAL}  \\n**Ticker:** {TICKER}  \\n**Razão Social:** {NOME_COMPLETO}  \\n---\\n\\n## 🏢 PERFIL CORPORATIVO\\n\\n**Fundação:** {Ano e contexto}\\n**Sede:** {Localização}\\n**Principais Atividades:** {Core business detalhado}\\n**Posicionamento:** {Market share, ranking setorial}\\n**Modelo de Negócio:** {Revenue streams principais}\\n\\n---\\n\\n## 💰 RESUMO FINANCEIRO\\n\\n**Preço Atual:** R$ {PRECO_ATUAL}  \\n**Variação Diária:** {VARIACAO_PERCENTUAL}% ({VARIACAO_ABSOLUTA})  \\n**Abertura:** R$ {PRECO_ABERTURA}  \\n**Máxima do Dia:** R$ {MAXIMA_DIA}  \\n**Mínima do Dia:** R$ {MINIMA_DIA}  \\n**Volume:** {VOLUME_FORMATADO}  \\n\\n**Variação 52 Semanas:** R$ {MIN_52S} - R$ {MAX_52S}  \\n**Market Cap:** R$ {MARKET_CAP_FORMATADO}  \\n**P/L:** {PE_RATIO}  \\n**LPA:** R$ {EARNINGS_PER_SHARE}  \\n\\n---\\n\\n## 📈 ANÁLISE DE PERFORMANCE\\n\\n### Contexto Atual\\n{ANÁLISE_DO_PREÇO_ATUAL_EM_RELAÇÃO_AOS_RANGES}\\n\\n### Indicadores Técnicos\\n{INTERPRETAÇÃO_DOS_MÚLTIPLOS_E_MÉTRICAS}\\n\\n---\\n\\n## 📰 NOTÍCIAS MAIS RELEVANTES\\n\\n### 🔥 Notícia 1: {TÍTULO_NOTÍCIA_1}\\n**Data:** {DATA_NOTÍCIA_1}  \\n**Link:** {LINK_NOTÍCIA_1}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n### 📊 Notícia 2: {TÍTULO_NOTÍCIA_2}  \\n**Data:** {DATA_NOTÍCIA_2}  \\n**Link:** {LINK_NOTÍCIA_2}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n### 💼 Notícia 3: {TÍTULO_NOTÍCIA_3}\\n**Data:** {DATA_NOTÍCIA_3}  \\n**Link:** {LINK_NOTÍCIA_3}  \\n**Resumo:** {RESUMO_EXECUTIVO_2_3_LINHAS}  \\n**Impacto:** {ANÁLISE_DO_IMPACTO_PARA_INVESTIDORES}  \\n\\n---\\n\\n## 🎯 ANÁLISE INTEGRADA\\n\\n### Síntese dos Dados\\n{COMBINE_INFORMAÇÕES_DE_COTAÇÃO_E_NOTÍCIAS_PARA_CRIAR_UMA_VISÃO_HOLÍSTICA}\\n\\n### Pontos de Atenção\\n- {RISCOS_IDENTIFICADOS_NAS_NOTÍCIAS}\\n- {OPORTUNIDADES_IDENTIFICADAS}\\n- {FATORES_TÉCNICOS_RELEVANTES}\\n\\n### Catalisadores Potenciais\\n- {EVENTOS_FUTUROS_MENCIONADOS_NAS_NOTÍCIAS}\\n- {MARCOS_TÉCNICOS_IMPORTANTES}\\n\\n---\\n\\n##!DISCLAIMERS\\n\\n- **Dados de Mercado:** Baseados na última sessão disponível\\n- **Notícias:** Selecionadas por relevância e impacto potencial  \\n- **Não é Recomendação:** Este documento é apenas informativo\\n- **Verificação:** Recomenda-se confirmação em fontes oficiais\\n- **Risco:** Todo investimento envolve riscos\\n\\n---\\n\\n**Relatório Gerado por:** Sistema Automatizado de Investment Banking  \\n**Modelo:** Gemini 1.5 Flash  \\n**Timestamp:** {TIMESTAMP_GERACAO}\\n\\n---\\n\\n## REGRAS CRÍTICAS:\\n\\n###**DEVE FAZER:**\\n- Usar APENAS dados fornecidos, excluindo a seção \\\"🏢 PERFIL CORPORATIVO\\\" que deve buscar informações sobre\\n- Formatar valores monetários em Real brasileiro (R$)\\n- Datar todas as informações adequadamente\\n- Focar em aspectos relevantes para Investment Banking\\n- Manter linguagem técnica e profissional\\n- Quantificar impactos quando possível\\n\\n###**NÃO DEVE FAZER:**\\n- Inventar dados não presentes\\n- Fazer recomendações de compra/venda\\n- Usar informações de fontes externas aos dados fornecidos\\n- Repetir notícias com conteúdo similar\\n- Incluir análises especulativas sem base nos dados\\n\\n### **CRITÉRIOS PARA SELEÇÃO DE NOTÍCIAS:**\\n\\n**Prioridade Alta:**\\n- Resultados trimestrais/anuais\\n- Dividendos e proventos\\n- Mudanças na gestão\\n- Grandes investimentos/desinvestimentos\\n- Aquisições/fusões\\n- Aprovações regulatórias importantes\\n\\n**Prioridade Média:**\\n- Análises de bancos de investimento\\n- Mudanças de rating\\n- Notícias setoriais específicas\\n- Parcerias estratégicas\\n\\n**Prioridade Baixa:**\\n- Notícias do mercado geral\\n- Análises técnicas do Ibovespa\\n- Comentários genéricos sobre o setor\\n\\n---\\n\\n## EXEMPLO DE FORMATAÇÃO DE VALORES:\\n\\n- **Monetary:** R$ 32,53 (não $32.53)\\n- **Percentage:** +2,46% (não 2.46%)\\n- **Volume:** 74,8 milhões (não 74819900)\\n- **Market Cap:** R$ 400,6 bilhões (não 400583262534)\\n\\n---\\n\\n**EXECUTE A ANÁLISE AGORA COM OS DADOS FORNECIDOS.** Caso os dados não aparecem de forma clara, apresente no final do documento como eles foram apresentados\"             }           ]         }       ] }}",
               "type": "array"
             },
             {
-              "id": "generation-config",
-              "name": "generationConfig",
+              "id": "11f406b1-7cfa-43c4-9aa4-ad611699aff6",
+              "name": "=generationConfig",
               "value": "={{ [{         \"temperature\": 0.3,         \"maxOutputTokens\": 2048,         \"topP\": 0.8,         \"topK\": 40       }] }}",
               "type": "array"
             }
@@ -332,14 +402,14 @@ Query Parameters:
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [440, 0],
-      "id": "edit-fields-prompt",
-      "name": "Edit Fields - Prompt"
+      "position": [980, 0],
+      "id": "af1a6685-d118-4a44-8d1b-131878de20cd",
+      "name": "Edit Fields2"
     },
     {
       "parameters": {
         "resource": "folder",
-        "name": "={{ $('Edit Fields').item.json['empresa'] }}",
+        "name": "={{ $('Edit Fields').item.json['\"empresa\"'] }}",
         "driveId": {
           "__rl": true,
           "mode": "list",
@@ -349,15 +419,15 @@ Query Parameters:
           "__rl": true,
           "value": "[SUBSTITUA_PELO_ID_DA_SUA_PASTA]",
           "mode": "list",
-          "cachedResultName": "Investment Banking Reports",
+          "cachedResultName": "projetoEstagio",
           "cachedResultUrl": "https://drive.google.com/drive/folders/[ID_DA_PASTA]"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [1000, 0],
-      "id": "google-drive-folder",
+      "position": [1500, 0],
+      "id": "97de815a-efc1-42c7-a06e-2dd8ded95a83",
       "name": "Google Drive",
       "credentials": {
         "googleDriveOAuth2Api": {
@@ -365,6 +435,84 @@ Query Parameters:
           "name": "Google Drive account"
         }
       }
+    },
+    {
+      "parameters": {
+        "url": "= https://brapi.dev/api/quote/{{ $('Edit Fields').item.json['\"empresa\"'] }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "token",
+              "value": "[SUBSTITUA_PELO_SEU_TOKEN_BRAPI]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [440, 0],
+      "id": "9a618cb4-cdd0-41f0-8494-224528de3348",
+      "name": "BRAPI-QUOTE"
+    },
+    {
+      "parameters": {
+        "url": "=https://newsapi.org/v2/everything",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "={{ $('Edit Fields').item.json['\"empresa\"'] }}"
+            },
+            {
+              "name": "language",
+              "value": "=pt"
+            },
+            {
+              "name": "sortBy",
+              "value": "publishedAt"
+            },
+            {
+              "name": "apiKey",
+              "value": "[SUBSTITUA_PELA_SUA_CHAVE_NEWSAPI]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [640, 0],
+      "id": "c7197e56-a5ce-4313-9de1-9605d772106b",
+      "name": "NEWSAPI-NEWS"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cef7bd22-ee59-4379-b8cd-3a1265e6ee6d",
+              "name": "formatacaoNews",
+              "value": "={{ $json.articles }}",
+              "type": "string"
+            },
+            {
+              "id": "e334ec39-e94d-4ad7-bef7-25c30b2485a6",
+              "name": "formatacaoQuote",
+              "value": "={{ $('BRAPI-QUOTE').item.json.results }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [820, 0],
+      "id": "492e7c9d-654a-484c-adf6-601299b33fa6",
+      "name": "Edit Fields3"
     }
   ],
   "pinData": {},
@@ -384,14 +532,14 @@ Query Parameters:
       "main": [
         [
           {
-            "node": "Edit Fields - Prompt",
+            "node": "BRAPI-QUOTE",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields - Analysis": {
+    "Edit Fields1": {
       "main": [
         [
           {
@@ -406,14 +554,14 @@ Query Parameters:
       "main": [
         [
           {
-            "node": "Google Docs - Update",
+            "node": "Google Docs1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Google Docs - Update": {
+    "Google Docs1": {
       "main": [
         [
           {
@@ -424,22 +572,22 @@ Query Parameters:
         ]
       ]
     },
-    "HTTP Request - Gemini": {
+    "HTTP Request": {
       "main": [
         [
           {
-            "node": "Edit Fields - Analysis",
+            "node": "Edit Fields1",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Edit Fields - Prompt": {
+    "Edit Fields2": {
       "main": [
         [
           {
-            "node": "HTTP Request - Gemini",
+            "node": "HTTP Request",
             "type": "main",
             "index": 0
           }
@@ -456,19 +604,52 @@ Query Parameters:
           }
         ]
       ]
+    },
+    "BRAPI-QUOTE": {
+      "main": [
+        [
+          {
+            "node": "NEWSAPI-NEWS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "NEWSAPI-NEWS": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "investment-banking-v1.0",
+  "versionId": "e608c1c4-f1cb-4752-abad-5d737da39203",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "investment-banking-automation"
+    "instanceId": "f703af88e39c1bdf94c33361d2b3287ee191ca47808bb38bf2428e19901c623a"
   },
-  "id": "investment-banking-workflow",
-  "tags": ["investment-banking", "automation", "b3", "analysis"]
+  "id": "J5XzbIICEwZTFscv",
+  "tags": []
 }
 ```
 
@@ -490,6 +671,12 @@ Procure e substitua os seguintes valores no workflow:
 # Gemini API Key
 [SUBSTITUA_PELA_SUA_CHAVE_GEMINI] → sua_chave_gemini_real
 
+# BRAPI Token
+[SUBSTITUA_PELO_SEU_TOKEN_BRAPI] → seu_token_brapi_real
+
+# NewsAPI Key
+[SUBSTITUA_PELA_SUA_CHAVE_NEWSAPI] → sua_chave_newsapi_real
+
 # Google Drive Folder ID  
 [SUBSTITUA_PELO_ID_DA_SUA_PASTA] → id_da_pasta_google_drive
 
@@ -497,13 +684,30 @@ Procure e substitua os seguintes valores no workflow:
 [SUBSTITUA_PELO_ID_DA_SUA_CREDENCIAL] → selecionado_automaticamente
 ```
 
-### 3. Ativar Workflow
+### 3. Fluxo de Execução do Workflow
+
+O workflow atual funciona da seguinte forma:
+
+1. **Webhook** → Recebe dados da requisição
+2. **Edit Fields** → Processa dados iniciais (empresa, timestamp, título)
+3. **BRAPI-QUOTE** → Busca cotação da empresa na B3
+4. **NEWSAPI-NEWS** → Busca notícias recentes sobre a empresa
+5. **Edit Fields3** → Formata dados de cotação e notícias
+6. **Edit Fields2** → Prepara prompt complexo para o Gemini
+7. **HTTP Request** → Envia análise para Gemini AI
+8. **Edit Fields1** → Processa resposta do Gemini
+9. **Google Drive** → Cria pasta para a empresa
+10. **Google Docs** → Cria documento na pasta
+11. **Google Docs1** → Insere análise no documento
+12. **Respond to Webhook** → Retorna resposta com link do documento
+
+### 4. Ativar Workflow
 
 1. **Toggle "Active"** no canto superior direito
 2. **Verificar webhook URL** gerada
 3. **Copiar URL** para configurar no frontend
 
-### 4. Teste Manual
+### 5. Teste Manual
 
 ```bash
 # Via curl
@@ -534,28 +738,53 @@ curl -X POST "https://[sua-instancia].app.n8n.cloud/webhook/empresa-research" \
 
 1. **Acesse "Executions"** no menu lateral
 2. **Monitore execuções** em tempo real
-3. **Analise erros** clicando nas execuções falharam
+3. **Analise erros** clicando nas execuções que falharam
 
 ### 2. Métricas Importantes
 
 | Métrica | Valor Normal | Ação se Anormal |
 |---------|--------------|-----------------|
-| Tempo de execução | 30-90 segundos | Verificar APIs |
+| Tempo de execução | 60-120 segundos | Verificar APIs |
 | Taxa de sucesso | >95% | Revisar credenciais |
 | Uso de quota Gemini | <80% | Monitorar limites |
+| Resposta BRAPI | <2 segundos | Verificar token |
+| Resposta NewsAPI | <3 segundos | Verificar cota |
 
-### 3. Alertas Recomendados
+### 3. Pontos de Falha Comuns
 
-```yaml
-# Via webhook (opcional)
-Erro_execução:
-  webhook: "https://hooks.slack.com/[seu-webhook]"
-  
-Quota_excedida:
-  email: "[seu-email]"
-  
-Sucesso_documento:
-  log: "Documento criado: {{ $json.documentId }}"
+#### BRAPI API
+- Verificar se token está válido
+- Confirmar se ticker existe na B3
+- Monitorar limites de requisições
+
+#### NewsAPI 
+- Verificar cota diária (1000 requisições gratuitas)
+- Confirmar se API key está ativa
+- Analisar se há notícias em português
+
+#### Gemini AI
+- Monitorar quota de requisições por minuto
+- Verificar se prompt não excede limites
+- Confirmar se API key tem permissões
+
+### 4. Troubleshooting Específico
+
+#### Erro "No articles found"
+```
+Causa: NewsAPI não encontrou notícias
+Solução: Verificar se empresa tem cobertura de mídia
+```
+
+#### Erro "Invalid ticker"
+```
+Causa: BRAPI não reconhece o ticker
+Solução: Verificar se ticker está correto (ex: PETR4)
+```
+
+#### Erro "Token limit exceeded"
+```
+Causa: Prompt do Gemini muito longo
+Solução: Reduzir dados de entrada ou aumentar maxOutputTokens
 ```
 
 ## 🔧 Customizações Avançadas
@@ -563,70 +792,38 @@ Sucesso_documento:
 ### 1. Adicionar Mais Fontes de Dados
 
 ```javascript
-// Novo nó HTTP Request - Alpha Vantage
+// Novo nó HTTP Request - Yahoo Finance
 {
-  "url": "https://www.alphavantage.co/query",
-  "parameters": {
-    "function": "TIME_SERIES_DAILY",
-    "symbol": "{{ $json.empresa }}.SAO",
-    "apikey": "[SUA_CHAVE_ALPHA_VANTAGE]"
-  }
+  "url": "https://query1.finance.yahoo.com/v8/finance/chart/{{ $json.empresa }}.SA",
+  "method": "GET"
 }
 ```
 
-### 2. Melhorar Prompt do Gemini
-
-```text
-// Prompt customizado para setor específico
-"Analise a empresa {{ $json.empresa }} focando especificamente no setor de {{ $json.setor }}. 
-Considere:
-- Regulamentações específicas do setor
-- Comparação com peers setoriais
-- Impactos macroeconômicos relevantes
-- KPIs específicos do setor"
-```
-
-### 3. Adicionar Validações
+### 2. Melhorar Filtro de Notícias
 
 ```javascript
-// Nó de validação antes do processamento
-if (!$json.empresa || $json.empresa.length < 4) {
-  throw new Error('Ticker inválido');
-}
-
-if (!$json.empresa.match(/^[A-Z]{4}[0-9]?$/)) {
-  throw new Error('Formato de ticker inválido');
-}
+// Filtrar notícias por relevância
+const filteredNews = $json.articles.filter(article => {
+  const title = article.title.toLowerCase();
+  const empresa = $('Edit Fields').item.json.empresa.toLowerCase();
+  return title.includes(empresa) || title.includes('dividendo') || title.includes('resultado');
+});
 ```
 
-## 🚨 Backup e Segurança
+### 3. Adicionar Análise Técnica
 
-### 1. Backup do Workflow
-
-```bash
-# Exportar workflow via API
-curl -X GET 'https://[sua-instancia].app.n8n.cloud/rest/workflows/[workflow-id]' \
-  -H 'Authorization: Bearer [seu-token]' > backup-workflow.json
+```javascript
+// Calcular indicadores técnicos
+const quote = $('BRAPI-QUOTE').item.json.results[0];
+const rsi = calculateRSI(quote.historicalData);
+const ma20 = calculateMovingAverage(quote.historicalData, 20);
 ```
-
-### 2. Versionamento
-
-1. **Sempre fazer backup** antes de mudanças
-2. **Usar tags** para versionar workflows
-3. **Documentar mudanças** no campo "Notes"
-
-### 3. Segurança
-
-- ✅ Usar HTTPS para todos endpoints
-- ✅ Configurar credenciais com escopo mínimo
-- ✅ Monitorar logs de acesso
-- ✅ Rotacionar API keys periodicamente
 
 ---
 
 <div align="center">
 
-**Workflow n8n configurado com sucesso!** 🎉  
-Agora você pode prosseguir para os [testes finais](guia-implementacao.md#testes-e-validação)
+**Workflow n8n atualizado configurado com sucesso!** 🎉  
+O sistema agora inclui integração completa com BRAPI e NewsAPI
 
 </div>
