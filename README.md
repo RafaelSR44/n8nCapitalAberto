@@ -70,7 +70,7 @@ Este projeto foi desenvolvido para atender integralmente ao **Teste Prático: Es
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/investment-banking-automation.git
+   git clone https://github.com/RafaelSR44/n8nCapitalAberto.git
    cd investment-banking-automation
    ```
 
