@@ -89,7 +89,7 @@ Este projeto foi desenvolvido para atender integralmente ao **Teste Prático: Es
 
 ### Interface de Busca
 A interface permite busca inteligente por nome da empresa ou ticker:
-- **Base de dados**: 400+ empresas listadas na B3
+- **Base de dados**: 300+ empresas listadas na B3
 - **Busca inteligente**: Por nome ou código do ticker
 - **Seleção fácil**: Click nos badges dos tickers
 - **Feedback visual**: Status em tempo real do processamento
@@ -139,7 +139,6 @@ investment-banking-automation/
 ├── 📁 frontend/
 │   └── 📄 index.html
 ├── 📁 n8n/
-│   ├── 📄 empresa-research-workflow.json
 │   └── 📄 My_workflow_Atual.json
 └── 📁 examples/
     ├── 📄 formatacaoNews.json
